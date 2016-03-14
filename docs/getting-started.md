@@ -7,7 +7,7 @@ Unsure where to begin with working on the project? This guide is designed to get
 
 2. Install [Node JS](https://nodejs.org/en/download/) - this provides two key capabilities; the first is the nodejs server which will act as our development server (think iisexpress), the second is npm a package manager (think nuget).
 
-3. Install [Python](https://www.python.org/downloads/) - this is used by some of the plug-ins and build tools inside Node JS
+3. On Windows: Install [Python v2.7.10](https://www.python.org/downloads/release/python-2710/) - this is used by some of the plug-ins and build tools inside Node JS - (Python v3.x.x is not supported by those modules). If Visual Studio is not installed on the client in addition to this C++ runtime is required. Please see [node-gyp Readme](https://github.com/nodejs/node-gyp/blob/master/README.md)
 
 4. Install a console emulator of your choice, for Windows [Cmder](http://cmder.net/) is popular. If installing Cmder choosing the full option will allow you to use git for windows. Whatever option you choose we will refer in the rest of the guide to "console" as the thing you installed in this step.
 
