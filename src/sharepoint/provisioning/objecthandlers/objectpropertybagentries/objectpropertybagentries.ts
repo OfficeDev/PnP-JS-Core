@@ -1,10 +1,10 @@
-// "use strict";
-// 
-// /// <reference path="..\schema\ipropertybagentry.d.ts" />
-// import { Promise } from "es6-promise";
-import { encodePropertyKey } from "../../../Util";
-import { ObjectHandlerBase } from "../ObjectHandlerBase/ObjectHandlerBase";
+/// <reference path="../../../../../typings/main.d.ts" />
+"use strict";
 
+import { Promise } from "es6-promise";
+import { encodePropertyKey } from "../../../../sharepoint/util";
+import { ObjectHandlerBase } from "../ObjectHandlerBase/ObjectHandlerBase";
+import { IPropertyBagEntry } from "../../schema/IPropertyBagEntry";
 
 export class ObjectPropertyBagEntries extends ObjectHandlerBase {
     constructor() {
