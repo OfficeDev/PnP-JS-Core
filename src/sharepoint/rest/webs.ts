@@ -1,8 +1,6 @@
 "use strict";
 
-import { Queryable } from "./Queryable";
-import * as Util from "../../utils/util";
-import * as Mixins from "./mixins";
+import { Queryable, QueryableSecurable } from "./Queryable";
 import { Lists } from "./lists";
 import { RoleAssignments } from "./roleAssignments";
 import { Navigation } from "./navigation";
@@ -15,7 +13,7 @@ import { File } from "./files";
  * Describes a web
  * 
  */
-export class Web extends Queryable implements Mixins.Gettable, Mixins.Selectable {
+export class Web extends QueryableSecurable {
 
     /**
      * Creates a new instance of the View class
@@ -92,18 +90,4 @@ export class Web extends Queryable implements Mixins.Gettable, Mixins.Selectable
     public getFileByServerRelativeUrl(fileRelativeUrl: string): File {
         return new File(this, `getFileByServerRelativeUrl('${fileRelativeUrl}')`);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Web { return; }
 }
-Util.applyMixins(Web, Mixins.Gettable, Mixins.Selectable);

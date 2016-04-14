@@ -1,14 +1,12 @@
 "use strict";
 
-import { Queryable } from "./Queryable";
-import * as Util from "../../utils/util";
-import * as Mixins from "./mixins";
+import { Queryable, QueryableCollection } from "./Queryable";
 
 /**
  * Describes a set of role assignments for the current scope
  * 
  */
-export class RoleAssignments extends Queryable implements Mixins.Gettable, Mixins.Filterable, Mixins.Selectable {
+export class RoleAssignments extends QueryableCollection {
 
     /**
      * Creates a new instance of the RoleAssignments class
@@ -18,25 +16,4 @@ export class RoleAssignments extends Queryable implements Mixins.Gettable, Mixin
     constructor(baseUrl: string | Queryable) {
         super(baseUrl, "RoleAssignments");
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Applies a filter to the request
-     * 
-     * @param filter The filter string (docs: https://msdn.microsoft.com/en-us/library/office/fp142385.aspx)
-     */
-    public filter(filter: string): RoleAssignments { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): RoleAssignments { return; }
 }
-Util.applyMixins(RoleAssignments, Mixins.Gettable, Mixins.Filterable, Mixins.Selectable);

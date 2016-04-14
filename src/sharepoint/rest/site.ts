@@ -1,15 +1,13 @@
 "use strict";
 
-import { Queryable } from "./Queryable";
-import * as Util from "../../utils/util";
-import * as Mixins from "./mixins";
+import { QueryableInstance } from "./Queryable";
 import { Web } from "./webs";
 
 /**
  * Describes a site collection
  * 
  */
-export class Site extends Queryable implements Mixins.Gettable, Mixins.Selectable {
+export class Site extends QueryableInstance {
 
     /**
      * Creates a new instance of the RoleAssignments class
@@ -27,18 +25,4 @@ export class Site extends Queryable implements Mixins.Gettable, Mixins.Selectabl
     public get rootWeb(): Web {
         return new Web(this, "rootweb");
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Site { return; }
 }
-Util.applyMixins(Site, Mixins.Gettable, Mixins.Selectable);

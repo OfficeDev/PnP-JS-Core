@@ -4,6 +4,7 @@
         "module": "umd",
         "jsx": "react",
         "declaration": false,
-        "sourceMap": true
+        "sourceMap": true,
+        "removeComments": true
     }
 }

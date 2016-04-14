@@ -1,16 +1,13 @@
 "use strict";
 
-import { Queryable } from "./Queryable";
-import * as Util from "../../utils/util";
-import * as Mixins from "./mixins";
+import { Queryable, QueryableCollection, QueryableInstance } from "./Queryable";
 import { Files } from "./files";
-import { Gettable, SelectableGettable } from "./actionables";
 
 /**
  * Describes a collection of Folder objects
  * 
  */
-export class Folders extends Queryable implements Mixins.Gettable, Mixins.Selectable, Mixins.Filterable {
+export class Folders extends QueryableCollection {
 
     /**
      * Creates a new instance of the Folders class
@@ -29,34 +26,13 @@ export class Folders extends Queryable implements Mixins.Gettable, Mixins.Select
         this.concat(`('${name}')`);
         return new Folder(this);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Folders { return; }
-
-    /**
-     * Applies a filter to the request
-     * 
-     * @param filter The filter string (docs: https://msdn.microsoft.com/en-us/library/office/fp142385.aspx)
-     */
-    public filter(filter: string): Folders { return; }
 }
-Util.applyMixins(Folders, Mixins.Gettable, Mixins.Selectable, Mixins.Filterable);
 
 /**
  * Describes a single Folder instance
  * 
  */
-export class Folder extends Queryable implements Mixins.Gettable, Mixins.Selectable {
+export class Folder extends QueryableInstance {
 
     /**
      * Creates a new instance of the Folder class
@@ -88,27 +64,27 @@ export class Folder extends Queryable implements Mixins.Gettable, Mixins.Selecta
      * Gets the folders name
      * 
      */
-    public get name(): Gettable<any> {
+    public get name(): Queryable {
         this.append("Name");
-        return new Gettable<any>(this);
+        return new Queryable(this);
     }
 
     /**
      * Gets this folder's properties
      * 
      */
-    public get properties(): SelectableGettable<any> {
+    public get properties(): QueryableInstance {
         this.append("Properties");
-        return new SelectableGettable<any>(this);
+        return new QueryableInstance(this);
     }
 
     /**
      * Gets this folder's server relative url
      * 
      */
-    public get serverRelativeUrl(): Gettable<any> {
+    public get serverRelativeUrl(): Queryable {
         this.append("ServerRelativeUrl");
-        return new Gettable<any>(this);
+        return new Queryable(this);
     }
 
     /**
@@ -118,18 +94,4 @@ export class Folder extends Queryable implements Mixins.Gettable, Mixins.Selecta
     public get files(): Files {
         return new Files(this);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Folder { return; }
 }
-Util.applyMixins(Folder, Mixins.Gettable, Mixins.Selectable);

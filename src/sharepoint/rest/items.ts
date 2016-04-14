@@ -1,18 +1,14 @@
 "use strict";
 
-import { Queryable } from "./Queryable";
-import * as Util from "../../utils/util";
-import * as Mixins from "./mixins";
-import { Gettable, SelectableGettable, FilterableSelectableGettable } from "./actionables";
+import { Queryable, QueryableCollection, QueryableInstance, QueryableSecurable } from "./Queryable";
 import { Folder } from "./folders";
 import { ContentType } from "./contenttypes";
-import { RoleAssignments } from "./roleassignments";
 
 /**
  * Describes a collection of Item objects
  * 
  */
-export class Items extends Queryable implements Mixins.Gettable, Mixins.Selectable, Mixins.Filterable {
+export class Items extends QueryableCollection {
 
     /**
      * Creates a new instance of the Items class
@@ -32,35 +28,14 @@ export class Items extends Queryable implements Mixins.Gettable, Mixins.Selectab
         this.concat(`(${id})`);
         return new Item(this);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Items { return; }
-
-    /**
-     * Applies a filter to the request
-     * 
-     * @param filter The filter string (docs: https://msdn.microsoft.com/en-us/library/office/fp142385.aspx)
-     */
-    public filter(filter: string): Items { return; }
 }
-Util.applyMixins(Items, Mixins.Gettable, Mixins.Selectable, Mixins.Filterable);
 
 
 /**
  * Descrines a single Item instance
  * 
  */
-export class Item extends Queryable implements Mixins.Gettable, Mixins.Selectable {
+export class Item extends QueryableSecurable {
 
     /**
      * Creates a new instance of the Items class
@@ -75,9 +50,9 @@ export class Item extends Queryable implements Mixins.Gettable, Mixins.Selectabl
      * Gets the set of attachments for this item
      * 
      */
-    public get attachmentFiles(): FilterableSelectableGettable<any> {
+    public get attachmentFiles(): QueryableCollection {
         this.append("AttachmentFiles");
-        return new FilterableSelectableGettable<any>(this);
+        return new QueryableCollection(this);
     }
 
     /**
@@ -93,54 +68,45 @@ export class Item extends Queryable implements Mixins.Gettable, Mixins.Selectabl
      * Gets the effective base permissions for the item
      * 
      */
-    public get effectiveBasePermissions(): Gettable<any> {
+    public get effectiveBasePermissions(): Queryable {
         this.append("EffectiveBasePermissions");
-        return new Gettable<any>(this);
+        return new Queryable(this);
     }
 
     /**
      * Gets the effective base permissions for the item in a UI context
      * 
      */
-    public get effectiveBasePermissionsForUI(): Gettable<any> {
+    public get effectiveBasePermissionsForUI(): Queryable {
         this.append("EffectiveBasePermissionsForUI");
-        return new Gettable<any>(this);
+        return new Queryable(this);
     }
 
     /**
      * Gets the field values for this list item in their HTML representation
      * 
      */
-    public get fieldValuesAsHTML(): SelectableGettable<any> {
+    public get fieldValuesAsHTML(): QueryableInstance {
         this.append("FieldValuesAsHTML");
-        return new SelectableGettable<any>(this);
+        return new QueryableInstance(this);
     }
 
     /**
      * Gets the field values for this list item in their text representation
      * 
      */
-    public get fieldValuesAsText(): SelectableGettable<any> {
+    public get fieldValuesAsText(): QueryableInstance {
         this.append("FieldValuesAsText");
-        return new SelectableGettable<any>(this);
+        return new QueryableInstance(this);
     }
 
     /**
      * Gets the field values for this list item for use in editing controls
      * 
      */
-    public get fieldValuesForEdit(): SelectableGettable<any> {
+    public get fieldValuesForEdit(): QueryableInstance {
         this.append("FieldValuesForEdit");
-        return new SelectableGettable<any>(this);
-    }
-
-    /**
-     * Gets the closest securable up the security hierarchy whose permissions are applied to this list item
-     * 
-     */
-    public get firstUniqueAncestorSecurableObject(): SelectableGettable<any> {
-        this.append("FirstUniqueAncestorSecurableObject");
-        return new SelectableGettable<any>(this);
+        return new QueryableInstance(this);
     }
 
     /**
@@ -150,37 +116,4 @@ export class Item extends Queryable implements Mixins.Gettable, Mixins.Selectabl
     public get folder(): Folder {
         return new Folder(this, "Folder");
     }
-
-    /**
-     * Gets the effective permissions for the user supplied
-     * 
-     * @param loginName The claims username for the user (ex: i:0#.f|membership|user@domain.com)
-     */
-    public getUserEffectivePermissions(loginName: string): Gettable<any> {
-        this.append("getUserEffectivePermissions(@user)");
-        this._query.add("@user", "'" + encodeURIComponent(loginName) + "'");
-        return new Gettable<any>(this);
-    }
-
-    /**
-     * Gets the set of role assignments for this item
-     * 
-     */
-    public get roleAssignments(): RoleAssignments {
-        return new RoleAssignments(this);
-    }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Item { return; }
 }
-Util.applyMixins(Item, Mixins.Gettable, Mixins.Selectable);

@@ -1,14 +1,12 @@
 "use strict";
 
-import { Queryable } from "./Queryable";
-import * as Util from "../../utils/util";
-import * as Mixins from "./mixins";
+import { Queryable, QueryableCollection, QueryableInstance } from "./Queryable";
 
 /**
  * Describes the views available in the current context
  * 
  */
-export class Views extends Queryable implements Mixins.Gettable, Mixins.Selectable, Mixins.Filterable {
+export class Views extends QueryableCollection {
 
     /**
      * Creates a new instance of the Views class
@@ -28,35 +26,14 @@ export class Views extends Queryable implements Mixins.Gettable, Mixins.Selectab
         this.concat(`(guid'${id}')`);
         return new View(this);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Views { return; }
-
-    /**
-     * Applies a filter to the request
-     * 
-     * @param filter The filter string (docs: https://msdn.microsoft.com/en-us/library/office/fp142385.aspx)
-     */
-    public filter(filter: string): Views { return; }
 }
-Util.applyMixins(Views, Mixins.Gettable, Mixins.Selectable, Mixins.Filterable);
 
 
 /**
  * Describes a single View instance
  * 
  */
-export class View extends Queryable implements Mixins.Gettable, Mixins.Selectable {
+export class View extends QueryableInstance {
 
     /**
      * Creates a new instance of the View class
@@ -66,18 +43,4 @@ export class View extends Queryable implements Mixins.Gettable, Mixins.Selectabl
     constructor(baseUrl: string | Queryable) {
         super(baseUrl);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): View { return; }
 }
-Util.applyMixins(View, Mixins.Gettable, Mixins.Selectable);

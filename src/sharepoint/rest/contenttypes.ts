@@ -1,14 +1,12 @@
 "use strict";
 
-import { Queryable } from "./Queryable";
-import * as Util from "../../utils/util";
-import * as Mixins from "./mixins";
+import { Queryable, QueryableCollection, QueryableInstance } from "./Queryable";
 
 /**
  * Describes a collection of content types
  * 
  */
-export class ContentTypes extends Queryable implements Mixins.Gettable, Mixins.Selectable, Mixins.Filterable {
+export class ContentTypes extends QueryableCollection {
 
     /**
      * Creates a new instance of the ContentTypes class
@@ -26,34 +24,13 @@ export class ContentTypes extends Queryable implements Mixins.Gettable, Mixins.S
         this.concat(`(\"${id}\")`);
         return new ContentType(this);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): ContentTypes { return; }
-
-    /**
-     * Applies a filter to the request
-     * 
-     * @param filter The filter string (docs: https://msdn.microsoft.com/en-us/library/office/fp142385.aspx)
-     */
-    public filter(filter: string): ContentTypes { return; }
 }
-Util.applyMixins(ContentTypes, Mixins.Gettable, Mixins.Selectable, Mixins.Filterable);
 
 /**
  * Describes a single ContentType instance
  * 
  */
-export class ContentType extends Queryable implements Mixins.Gettable, Mixins.Selectable {
+export class ContentType extends QueryableInstance {
 
     /**
      * Creates a new instance of the ContentType class
@@ -63,18 +40,4 @@ export class ContentType extends Queryable implements Mixins.Gettable, Mixins.Se
     constructor(baseUrl: string | Queryable) {
         super(baseUrl);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): ContentType { return; }
 }
-Util.applyMixins(ContentType, Mixins.Gettable, Mixins.Selectable);

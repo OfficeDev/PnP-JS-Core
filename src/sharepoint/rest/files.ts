@@ -1,15 +1,12 @@
 "use strict";
 
-import { Queryable } from "./Queryable";
-import * as Util from "../../utils/util";
-import * as Mixins from "./mixins";
-import { Gettable } from "./actionables";
+import { Queryable, QueryableCollection, QueryableInstance } from "./Queryable";
 
 /**
  * Describes a collection of File objects
  * 
  */
-export class Files extends Queryable implements Mixins.Gettable, Mixins.Selectable, Mixins.Filterable {
+export class Files extends QueryableCollection {
 
     /**
      * Creates a new instance of the Files class
@@ -29,35 +26,14 @@ export class Files extends Queryable implements Mixins.Gettable, Mixins.Selectab
         this.concat(`('${name}')`);
         return new File(this);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Files { return; }
-
-    /**
-     * Applies a filter to the request
-     * 
-     * @param filter The filter string (docs: https://msdn.microsoft.com/en-us/library/office/fp142385.aspx)
-     */
-    public filter(filter: string): Files { return; }
 }
-Util.applyMixins(Files, Mixins.Gettable, Mixins.Selectable, Mixins.Filterable);
 
 
 /**
  * Describes a single File instance
  * 
  */
-export class File extends Queryable implements Mixins.Gettable, Mixins.Selectable {
+export class File extends QueryableInstance {
 
     /**
      * Creates a new instance of the File class
@@ -73,36 +49,36 @@ export class File extends Queryable implements Mixins.Gettable, Mixins.Selectabl
      * Gets the contents of the file - If the file is not JSON a custom parser function should be used with the get call
      * 
      */
-    public get value(): Gettable<any> {
+    public get value(): Queryable {
         this.append("$value");
-        return new Gettable<any>(this);
+        return new Queryable(this);
     }
 
     /**
      * Gets a result indicating the current user who has a file checked out
      * 
      */
-    public get checkedOutByUser(): Gettable<any> {
+    public get checkedOutByUser(): Queryable {
         this.append("CheckedOutByUser");
-        return new Gettable<any>(this);
+        return new Queryable(this);
     }
 
     /**
      * Gets the current eTag of a file
      * 
      */
-    public get eTag(): Gettable<any> {
+    public get eTag(): Queryable {
         this.append("ETag");
-        return new Gettable<any>(this);
+        return new Queryable(this);
     }
 
     /**
      * Gets the server relative url of a file
      * 
      */
-    public get serverRelativeUrl(): Gettable<any> {
+    public get serverRelativeUrl(): Queryable {
         this.append("ServerRelativeUrl");
-        return new Gettable<any>(this);
+        return new Queryable(this);
     }
 
     /**
@@ -112,28 +88,14 @@ export class File extends Queryable implements Mixins.Gettable, Mixins.Selectabl
     public get versions(): Versions {
         return new Versions(this);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): File { return; }
 }
-Util.applyMixins(File, Mixins.Gettable, Mixins.Selectable);
 
 
 /**
  * Describes a collection of Version objects
  * 
  */
-export class Versions extends Queryable implements Mixins.Gettable, Mixins.Selectable, Mixins.Filterable {
+export class Versions extends QueryableCollection {
 
     /**
      * Creates a new instance of the File class
@@ -153,36 +115,14 @@ export class Versions extends Queryable implements Mixins.Gettable, Mixins.Selec
         this.concat(`(${versionId})`);
         return new Version(this);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Versions { return; }
-
-    /**
-     * Applies a filter to the request
-     * 
-     * @param filter The filter string (docs: https://msdn.microsoft.com/en-us/library/office/fp142385.aspx)
-     */
-    public filter(filter: string): Versions { return; }
-
 }
-Util.applyMixins(Versions, Mixins.Gettable, Mixins.Selectable, Mixins.Filterable);
 
 
 /**
  * Describes a single Version instance
  * 
  */
-export class Version extends Queryable implements Mixins.Gettable, Mixins.Selectable {
+export class Version extends QueryableInstance {
 
     /**
      * Creates a new instance of the Version class
@@ -193,18 +133,4 @@ export class Version extends Queryable implements Mixins.Gettable, Mixins.Select
     constructor(baseUrl: string | Queryable, path?: string) {
         super(baseUrl, path);
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
-
-    /**
-     * Select the fields to return
-     * 
-     * @param selects One or more fields to return
-     */
-    public select(...selects: string[]): Version { return; }
 }
-Util.applyMixins(Version, Mixins.Gettable, Mixins.Selectable);

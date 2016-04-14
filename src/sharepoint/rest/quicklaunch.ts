@@ -1,14 +1,12 @@
 "use strict";
 
 import { Queryable } from "./Queryable";
-import * as Util from "../../utils/util";
-import * as Mixins from "./mixins";
 
 /**
  * Describes the quick launch navigation
  * 
  */
-export class QuickLaunch extends Queryable implements Mixins.Gettable {
+export class QuickLaunch extends Queryable {
 
     /**
      * Creates a new instance of the Lists class
@@ -18,11 +16,4 @@ export class QuickLaunch extends Queryable implements Mixins.Gettable {
     constructor(baseUrl: string | Queryable) {
         super(baseUrl, "QuickLaunch");
     }
-
-    /**
-     * Execute the get request
-     * 
-     */
-    public get(): Promise<any> { return; }
 }
-Util.applyMixins(QuickLaunch, Mixins.Gettable);
