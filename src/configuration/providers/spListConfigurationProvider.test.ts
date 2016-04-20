@@ -18,25 +18,25 @@ describe("Configuration", () => {
             calledUrl = "";
         });
 
-        function mockJQuery(): any {
-            // Create a mock JQuery.ajax method, which will always return our testdata.
-            let mock: any = {};
-            mock.ajax = function(options: any) {
-                calledUrl = options.url;
-                let wrappedMockData: any[] = new Array();
-                for (let key in mockData) {
-                    if (typeof key === "string") {
-                        wrappedMockData.push({"Title": key, "Value": mockData[key]});
-                    }
-                }
-                return {
-                    "success": function(callback: (data: any) => void) {
-                        callback({ d: { results: wrappedMockData } });
-                    },
-                };
-            };
-            return mock;
-        }
+        // function mockJQuery(): any {
+        //     // Create a mock JQuery.ajax method, which will always return our testdata.
+        //     let mock: any = {};
+        //     mock.ajax = function(options: any) {
+        //         calledUrl = options.url;
+        //         let wrappedMockData: any[] = new Array();
+        //         for (let key in mockData) {
+        //             if (typeof key === "string") {
+        //                 wrappedMockData.push({"Title": key, "Value": mockData[key]});
+        //             }
+        //         }
+        //         return {
+        //             "success": function(callback: (data: any) => void) {
+        //                 callback({ d: { results: wrappedMockData } });
+        //             },
+        //         };
+        //     };
+        //     return mock;
+        // }
 
         it("Returns the webUrl passed in to the constructor", () => {
             let provider = new SPListConfigurationProvider(webUrl);
@@ -55,27 +55,27 @@ describe("Configuration", () => {
         });
 
 
-        it("Fetches configuration data from SharePoint using ajax", () => {
-            // Mock JQuery
-            (<any> global).jQuery = mockJQuery();
+        // it("Fetches configuration data from SharePoint using ajax", () => {
+        //     // Mock JQuery
+        //     (<any> global).jQuery = mockJQuery();
 
-            let listTitle = "testTitle";
-            let provider = new SPListConfigurationProvider(webUrl, listTitle);
-            return provider.getConfiguration().then((values) => {
-                // Verify url
-                expect(calledUrl).to.equal(webUrl + "/_api/web/lists/getByTitle('" + listTitle + "')/items?$select=Title,Value");
+        //     let listTitle = "testTitle";
+        //     let provider = new SPListConfigurationProvider(webUrl, listTitle);
+        //     return provider.getConfiguration().then((values) => {
+        //         // Verify url
+        //         expect(calledUrl).to.equal(webUrl + "/_api/web/lists/getByTitle('" + listTitle + "')/items?$select=Title,Value");
 
-                // Verify returned values
-                for (let key in mockData) {
-                    if (typeof key === "string") {
-                        expect(values[key]).to.equal(mockData[key]);
-                    }
-                }
+        //         // Verify returned values
+        //         for (let key in mockData) {
+        //             if (typeof key === "string") {
+        //                 expect(values[key]).to.equal(mockData[key]);
+        //             }
+        //         }
 
-                // Remove JQuery mock
-                delete (<any> global).jQuery;
-            });
-        });
+        //         // Remove JQuery mock
+        //         delete (<any> global).jQuery;
+        //     });
+        // });
 
         it("Can wrap itself inside a caching configuration provider", () => {
             // Mock localStorage

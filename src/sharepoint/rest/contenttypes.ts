@@ -21,8 +21,7 @@ export class ContentTypes extends QueryableCollection {
      * Gets a ContentType by content type id
      */
     public getById(id: string): ContentType {
-        this.concat(`(\"${id}\")`);
-        return new ContentType(this);
+        return new ContentType(this.toUrl().concat(`('${id}')`));
     }
 }
 

@@ -2,7 +2,6 @@
 
 import * as Util from "../../utils/util";
 import { Dictionary } from "../../collections/collections";
-import { RoleAssignments } from "./roleassignments";
 import { HttpClient } from "../../net/HttpClient";
 
 /**
@@ -23,14 +22,24 @@ export class Queryable {
         this._query = new Dictionary<string>();
 
         if (typeof baseUrl === "string") {
-            this._parentUrl = baseUrl as string;
+            // we need to do some extra parsing to get the parent url correct if we are
+            // being created from just a string.
+            if (baseUrl.lastIndexOf("/") > baseUrl.lastIndexOf("(")) {
+                let index = baseUrl.lastIndexOf("/");
+                this._parentUrl = baseUrl.slice(0, index);
+                path = Util.combinePaths(baseUrl.slice(index + 1), path);
+                this._url = Util.combinePaths(this._parentUrl, path);
+            } else {
+                let index = baseUrl.lastIndexOf("(");
+                this._parentUrl = baseUrl.slice(0, index);
+                this._url = Util.combinePaths(baseUrl, path);
+            }
         } else {
             let q = baseUrl as Queryable;
             this._parentUrl = q._url;
             this._query.merge(q._query);
+            this._url = Util.combinePaths(this._parentUrl, path);
         }
-
-        this._url = Util.combinePaths(this._parentUrl, path);
     }
 
     /**
@@ -64,6 +73,14 @@ export class Queryable {
      */
     protected append(pathPart: string) {
         this._url = Util.combinePaths(this._url, pathPart);
+    }
+
+    /**
+     * Gets the parent url used when creating this instance
+     * 
+     */
+    protected get parentUrl(): string {
+        return this._parentUrl;
     }
 
     /**
@@ -110,9 +127,9 @@ export class Queryable {
      * Executes the currently built request
      * 
      */
-    public get(parser: (r: Response) => Promise<any> = (r) => r.json()): Promise<any> {
+    public get(parser: (r: Response) => Promise<any> = this.defaultParser): Promise<any> {
         let client = new HttpClient();
-        return client.get(this.toUrlAndQuery()).then(function(response) {
+        return client.get(this.toUrlAndQuery()).then(function (response) {
 
             if (!response.ok) {
                 throw "Error making GET request: " + response.statusText;
@@ -120,16 +137,16 @@ export class Queryable {
 
             return parser(response);
 
-        }).then(function(parsed) {
+        }).then(function (parsed) {
             return parsed.hasOwnProperty("d") ? parsed.d.hasOwnProperty("results") ? parsed.d.results : parsed.d : parsed;
         });
     }
 
-    protected post(postOptions: any = {}, parser: (r: Response) => Promise<any> = (r) => r.json()): Promise<any> {
+    protected post(postOptions: any = {}, parser: (r: Response) => Promise<any> = this.defaultParser): Promise<any> {
 
         let client = new HttpClient();
 
-        return client.post(this.toUrlAndQuery(), postOptions).then(function(response) {
+        return client.post(this.toUrlAndQuery(), postOptions).then(function (response) {
 
             // 200 = OK (delete)
             // 201 = Created (create)
@@ -148,11 +165,25 @@ export class Queryable {
 
             // pipe our parsed content
             return parser(response);
+        });
+    }
 
-        }).then(function(parsed) {
-
-            // try and return the "data" portion of the response
-            return parsed.hasOwnProperty("d") ? parsed.d.hasOwnProperty("results") ? parsed.d.results : parsed.d : parsed;
+    /**
+     * Default parser used to simply the parsing of standard SharePoint results
+     * 
+     * @param r Response object from a successful fetch request
+     */
+    private defaultParser(r: Response): Promise<any> {
+        return r.json().then(function (json) {
+            if (json.hasOwnProperty("d")) {
+                if (json.d.hasOwnProperty("results")) {
+                    return json.d.results;
+                }
+                return json.d;
+            } else if (json.hasOwnProperty("value")) {
+                return json.value;
+            }
+            return json;
         });
     }
 }
@@ -162,16 +193,6 @@ export class Queryable {
  * 
  */
 export class QueryableCollection extends Queryable {
-
-    public top(pageSize: number): any {
-        this._query.add("$top", pageSize.toString());
-        return this;
-    }
-
-    public skip(pageStart: number): any {
-        this._query.add("$skip", pageStart.toString());
-        return this;
-    }
 
     public filter(filter: string): any {
         this._query.add("$filter", filter);
@@ -194,78 +215,5 @@ export class QueryableInstance extends Queryable {
     public select(...selects: string[]): any {
         this._query.add("$select", selects.join(","));
         return this;
-    }
-}
-
-export class QueryableSecurable extends QueryableInstance {
-
-    /**
-     * Gets the set of role assignments for this item
-     * 
-     */
-    public get roleAssignments(): RoleAssignments {
-        return new RoleAssignments(this);
-    }
-
-    /**
-     * Gets the closest securable up the security hierarchy whose permissions are applied to this list item
-     * 
-     */
-    public get firstUniqueAncestorSecurableObject(): QueryableInstance {
-        this.append("FirstUniqueAncestorSecurableObject");
-        return new QueryableInstance(this);
-    }
-
-    /**
-     * Gets the effective permissions for the user supplied
-     * 
-     * @param loginName The claims username for the user (ex: i:0#.f|membership|user@domain.com)
-     */
-    public getUserEffectivePermissions(loginName: string): Queryable {
-        this.append("getUserEffectivePermissions(@user)");
-        this._query.add("@user", "'" + encodeURIComponent(loginName) + "'");
-        return new Queryable(this);
-    }
-
-    /**
-     * Breaks the security inheritance at this level optinally copying permissions and clearing subscopes
-     * 
-     * @param copyRoleAssignments If true the permissions are copied from the current parent scope
-     * @param clearSubscopes Optional. true to make all child securable objects inherit role assignments from the current object
-     */
-    public breakRoleInheritance(copyRoleAssignments = false, clearSubscopes = false): Promise<any> {
-
-        class Breaker extends Queryable {
-            constructor(baseUrl: string | Queryable, copy: boolean, clear: boolean) {
-                super(baseUrl, `breakroleinheritance(copyroleassignments=${copy}, clearsubscopes=${clear})`);
-            }
-
-            public break(): Promise<any> {
-                return this.post();
-            }
-        }
-
-        let b = new Breaker(this, copyRoleAssignments, clearSubscopes);
-        return b.break();
-    }
-
-    /**
-     * Breaks the security inheritance at this level optinally copying permissions and clearing subscopes
-     * 
-     */
-    public resetRoleInheritance(): Promise<any> {
-
-        class Resetter extends Queryable {
-            constructor(baseUrl: string | Queryable) {
-                super(baseUrl, "resetroleinheritance");
-            }
-
-            public reset(): Promise<any> {
-                return this.post();
-            }
-        }
-
-        let r = new Resetter(this);
-        return r.reset();
     }
 }

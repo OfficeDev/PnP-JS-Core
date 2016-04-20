@@ -4,7 +4,7 @@
 
 Object, contains methods for working with a sharepoint web
 
-**Source**: [rest.ts](../../src/sharepoint/rest/rest.ts)
+**Source**: [rest.ts](../../../../src/sharepoint/rest/rest.ts)
 
 ###Properties###
 Name | Description

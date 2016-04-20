@@ -3,7 +3,7 @@
 
 Object, contains objects for working with sharepoint.
 
-**Source**: [sharepoint.ts](../../src/sharepoint/sharepoint.ts)
+**Source**: [sharepoint.ts](../../../src/sharepoint/sharepoint.ts)
 
 ###Properties###
 

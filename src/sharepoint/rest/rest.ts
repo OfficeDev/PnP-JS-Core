@@ -16,7 +16,7 @@ export class Rest {
      * @param url The base url for the request, optional if running in the context of a page
      */
     public get site(): Site {
-        return new Site("_api");
+        return new Site("_api", "site");
     }
 
     /**
@@ -25,7 +25,7 @@ export class Rest {
      * @param url The base url for the request, optional if running in the context of a page
      */
     public get web(): Web {
-        return new Web("_api");
+        return new Web("_api", "web");
     }
 
     /**

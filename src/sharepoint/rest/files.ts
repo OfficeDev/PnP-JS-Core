@@ -23,8 +23,7 @@ export class Files extends QueryableCollection {
      * @param name The name of the file, including extension
      */
     public getByName(name: string): File {
-        this.concat(`('${name}')`);
-        return new File(this);
+        return new File(this.toUrl().concat(`(\"${name}\")`));
     }
 }
 
@@ -112,8 +111,7 @@ export class Versions extends QueryableCollection {
      * @param versionId The id of the version to retrieve
      */
     public getById(versionId: number): Version {
-        this.concat(`(${versionId})`);
-        return new Version(this);
+        return new Version(this.toUrl().concat(`(${versionId})`));
     }
 }
 

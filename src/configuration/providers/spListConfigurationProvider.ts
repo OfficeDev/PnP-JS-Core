@@ -1,7 +1,8 @@
 import {IConfigurationProvider} from "../configuration";
 import {TypedHash} from "../../collections/collections";
 import { default as CachingConfigurationProvider } from "./cachingConfigurationProvider";
-import * as ajax from "../../Utils/Ajax";
+import { Web } from "../../sharepoint/rest/webs";
+import * as Util from "../../utils/util";
 
 /** 
  * A configuration provider which loads configuration values from a SharePoint list
@@ -41,16 +42,14 @@ export default class SPListConfigurationProvider implements IConfigurationProvid
      * @return {Promise<TypedHash<string>>} Promise of loaded configuration values
      */
     public getConfiguration(): Promise<TypedHash<string>> {
-        return new Promise((resolve, reject) => {
-            let url = `${ this.webUrl }/_api/web/lists/getByTitle('${ this.listTitle }')/items?$select=Title,Value`;
-            ajax.get(url).success(data => {
-                let results: any = (data.d.hasOwnProperty("results")) ? data.d.results : data.d;
-                let configuration: TypedHash<string> = {};
-                results.forEach(i => {
-                    configuration[i.Title] = i.Value;
-                });
-                resolve(configuration);
+
+        let web = new Web(Util.combinePaths(this.webUrl, "_api"));
+        return web.lists.getByTitle(this.listTitle).items.select("Title", "Value").get().then(function (data) {
+            let configuration: TypedHash<string> = {};
+            data.forEach(i => {
+                configuration[i.Title] = i.Value;
             });
+            return configuration;
         });
     }
 
@@ -60,7 +59,7 @@ export default class SPListConfigurationProvider implements IConfigurationProvid
      * @return {CachingConfigurationProvider} Caching providers which wraps the current provider
      */
     public asCaching(): CachingConfigurationProvider {
-        let cacheKey = `splist_${ this.webUrl}+${ this.listTitle }`;
+        let cacheKey = `splist_${this.webUrl}+${this.listTitle}`;
         return new CachingConfigurationProvider(this, cacheKey);
     }
 }

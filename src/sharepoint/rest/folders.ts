@@ -23,8 +23,7 @@ export class Folders extends QueryableCollection {
      * 
      */
     public getByName(name: string): Folder {
-        this.concat(`('${name}')`);
-        return new Folder(this);
+        return new Folder(this.toUrl().concat(`('${name}')`));
     }
 }
 

@@ -3,8 +3,8 @@
 
 A utility library to provide global methods to support common actions.
 
-**Source**: [util.ts](../../src/utils/util.ts)
-**Tests**: [util.ts](../../src/utils/util.test.ts)
+**Source**: [util.ts](../../../src/utils/util.ts)
+**Tests**: [util.ts](../../../src/utils/util.test.ts)
 
 ###Properties###
 

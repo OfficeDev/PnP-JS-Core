@@ -7,8 +7,8 @@ your applications.
 
 Surfaced in pnp.js as .storage
 
-**Source**: [storage.ts](../../src/utils/storage.ts)
-**Tests**: [storage.tests.ts](../../src/utils/storage.tests.ts)
+**Source**: [storage.ts](../../../src/utils/storage.ts)
+**Tests**: [storage.test.ts](../../../src/utils/storage.test.ts)
 
 ###Properties of PnP.storage###
 

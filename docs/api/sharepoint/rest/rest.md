@@ -3,8 +3,9 @@
 
 Object, contains methods for working with SharePoint REST
 
-**Source**: [rest.ts](../../src/sharepoint/rest/rest.ts)
+**Source**: [rest.ts](../../../../src/sharepoint/rest/rest.ts)
 
 ###Properties###
 Name | Description
-[[web.ts](../../src/sharepoint/rest/web.ts)| The current web
+-----|------------
+[web.ts](../../../../src/sharepoint/rest/web.ts)| The current web
