@@ -17,7 +17,8 @@ var gulp = require("gulp"),
 
 function setBrowserSync(buildServeTaskName) {
     browserSync.init({
-        server: global.PnPLocalServer.RootFolder
+        server: global.PnPLocalServer.RootFolder,
+        https: true
     });
 
     gulp.watch(global.TSWorkspace.Files, ["lint", buildServeTaskName]);

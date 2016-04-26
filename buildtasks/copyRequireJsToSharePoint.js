@@ -31,6 +31,8 @@ gulp.task("copyRequireJsToSharePoint", function() {
             username: global.settings.username,
             password: global.settings.password,
             siteUrl: global.settings.siteUrl,
-            folder: "Style%20Library/pnp"
+            folder: "Style%20Library/pnp",
+            checkin: true,
+            checkinType: 1
         }));
 });
