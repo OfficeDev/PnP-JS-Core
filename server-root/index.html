@@ -9,10 +9,16 @@
     <script src="./require.js" type="text/javascript"></script>
 
     <script type="text/javascript">
+        require(['scripts/core'], function(pnp) {
 
-       require(['scripts/pnp'], function(pnp) {        
-           
-           alert("our random string: " + pnp.util.getRandomString(5));         
+        var core = new pnp.Core();
+        alert("our random string: " + core.util.getRandomString(5));
+       });
+
+        require(['scripts/provisioning'], function(pnp) {
+
+        var prov = new pnp.Provisioning();
+        alert("Provisioning handler name: " + prov.core.handlers.ComposedLook.name);
        });
     </script>
 

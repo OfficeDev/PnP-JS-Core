@@ -1,8 +1,9 @@
 //******************************************************************************
 //* package.js
-//* 
-//* Defines a custom gulp task for creaing pnp.js, pnp.min.js, 
-//* and pnp.min.js.map in the dist folder
+//*
+//* Defines a custom gulp task for creating core.js, core.min.js,
+//* provisioning.js, provisioning.min.js
+//* and pnp/provisioning.min.js.map in the dist folder
 //******************************************************************************
 
 "use strict";
@@ -27,16 +28,16 @@ var gulp = require("gulp"),
 // we need to browsify build/src -> dist
 // we need to browsify & uglify build/src -> dist
 
-function packageDefinitions() {
+function packageDefinitions(file) {
 
-    console.log(global.TSDist.RootFolder + "/" + global.TSDist.DefinitionFileName);
+    console.log(global.TSDist.RootFolder + "/" + file + ".d.ts");
 
     var src = global.TSWorkspace.Files.slice(0);
     src.push(global.TSTypings.Main);
 
     // create a project specific to our typings build and specify the outFile. This will result
     // in a single pnp.d.ts file being creating and piped to the typings folder
-    var typingsProject = tsc.createProject('tsconfig.json', { "declaration": true, "outFile": "pnp.js" });
+    var typingsProject = tsc.createProject('tsconfig.json', { "declaration": true, "outFile": file + ".js" });
 
     return gulp.src(src)
         .pipe(tsc(typingsProject))
@@ -68,32 +69,32 @@ function packageLib() {
     ]);
 }
 
-function packageBundle() {
+function packageBundle(file) {
 
-    console.log(global.TSDist.RootFolder + "/" + global.TSDist.BundleFileName);
+    console.log(global.TSDist.RootFolder + "/" + file + ".js");
 
-    return browserify('./build/src/pnp.js', {
+    return browserify('./build/src/' + file + ".js", {
         debug: false,
         standalone: '$pnp',
         external: ["es6-promise", "jquery", "whatwg-fetch", "node-fetch"]
     }).ignore('*.d.ts').bundle()
-        .pipe(src(global.TSDist.BundleFileName))
+        .pipe(src(file + ".js"))
         .pipe(buffer())
         .pipe(header(banner, { pkg: global.pkg }))
         .pipe(gulp.dest(global.TSDist.RootFolder));
 }
 
-function packageBundleUglify() {
+function packageBundleUglify(file) {
 
-    console.log(global.TSDist.RootFolder + "/" + global.TSDist.MinifyFileName);
-    console.log(global.TSDist.RootFolder + "/" + global.TSDist.MinifyFileName + ".map");
+    console.log(global.TSDist.RootFolder + "/" + file + ".min.js");
+    console.log(global.TSDist.RootFolder + "/" + file + ".min.js" + ".map");
 
-    return browserify('./build/src/pnp.js', {
+    return browserify('./build/src/' + file + '.js', {
         debug: false,
         standalone: '$pnp',
         external: ["es6-promise", "jquery", "whatwg-fetch", "node-fetch"]
     }).ignore('*.d.ts').bundle()
-        .pipe(src(global.TSDist.MinifyFileName))
+        .pipe(src(file + ".min"))
         .pipe(buffer())
         .pipe(srcmaps.init({ loadMaps: true }))
         .pipe(uglify())
@@ -106,8 +107,13 @@ function packageBundleUglify() {
 //* PACKAGE
 //******************************************************************************
 gulp.task("package", ["build", "test"], function () {
-    packageDefinitions();
+    packageDefinitions("core");
     packageLib();
-    packageBundle();
-    packageBundleUglify();
+    packageBundle("core");
+    packageBundleUglify("core");
+
+    packageDefinitions("provisioning");
+    packageLib();
+    packageBundle("provisioning");
+    packageBundleUglify("provisioning");
 });

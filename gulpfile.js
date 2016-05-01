@@ -28,7 +28,7 @@ global.TSCompiledOutput = {
 
 global.TSWorkspace = {
     "RootFolder": 'src',
-    "PnPFile": "src/pnp.ts",
+    "PnPFile": "src/core.ts",
     "Files": [
         'src/**/*.ts',
     ],
@@ -39,10 +39,7 @@ global.TSWorkspace = {
 
 global.TSDist = {
     "RootFolder": 'dist',
-    "SrcFolder": "lib",
-    "BundleFileName": "pnp.js",
-    "MinifyFileName": "pnp.min.js",
-    "DefinitionFileName": "pnp.d.ts"
+    "SrcFolder": "lib"
 };
 
 global.PnPLocalServer = {
