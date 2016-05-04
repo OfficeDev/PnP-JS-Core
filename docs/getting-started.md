@@ -5,7 +5,7 @@
 
 Unsure where to begin with working on the project? This guide is designed to get you up and working quickly.
 
-1. Install [Visual Studio Code](https://code.visualstudio.com/) - this is the development environment we will use. It is similar to a light weight Visual Studio designed for each editing of client file types such as .ts and .js.
+1. Install [Visual Studio Code](https://code.visualstudio.com/) - this is the development environment we will use. It is similar to a light-weight Visual Studio designed for each editing of client file types such as .ts and .js. (Note that if you prefer you can [use Visual Studio for editing and to manage Git](using-visual-studio.md) )
 
 2. Install [Node JS](https://nodejs.org/en/download/) - this provides two key capabilities; the first is the nodejs server which will act as our development server (think iisexpress), the second is npm a package manager (think nuget).
 

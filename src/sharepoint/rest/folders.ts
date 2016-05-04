@@ -2,6 +2,7 @@
 
 import { Queryable, QueryableCollection, QueryableInstance } from "./Queryable";
 import { Files } from "./files";
+import { Item } from "./items";
 
 /**
  * Describes a collection of Folder objects
@@ -14,8 +15,8 @@ export class Folders extends QueryableCollection {
      * 
      * @param baseUrl The url or Queryable which forms the parent of this fields collection
      */
-    constructor(baseUrl: string | Queryable) {
-        super(baseUrl, "folders");
+    constructor(baseUrl: string | Queryable, path = "folders") {
+        super(baseUrl, path);
     }
 
     /**
@@ -23,7 +24,24 @@ export class Folders extends QueryableCollection {
      * 
      */
     public getByName(name: string): Folder {
-        return new Folder(this.toUrl().concat(`('${name}')`));
+        let f = new Folder(this);
+        f.concat(`('${name}')`);
+        return f;
+    }
+
+    /**
+     * Adds a new folder to the current folder (relative) or any folder (absolute)
+     * 
+     * @param url The relative or absolute url where the new folder will be created. Urls starting with a forward slash are absolute.
+     * @returns The new Folder and the raw response.
+     */
+    public add(url: string): Promise<FolderAddResult> {
+        return new Folders(this, `add('${url}')`).post().then((response) => {
+            return {
+                data: response,
+                folder: this.getByName(url),
+            };
+        });
     }
 }
 
@@ -32,6 +50,13 @@ export class Folders extends QueryableCollection {
  * 
  */
 export class Folder extends QueryableInstance {
+
+    //
+    // TODO:
+    //      Properties (https://msdn.microsoft.com/en-us/library/office/dn450841.aspx#bk_FolderProperties)
+    //          UniqueContentTypeOrder (setter)
+    //          WelcomePage (setter)
+    //
 
     /**
      * Creates a new instance of the Folder class
@@ -44,11 +69,19 @@ export class Folder extends QueryableInstance {
     }
 
     /**
-     * Gets the parent folder, if available
+     * Specifies the sequence in which content types are displayed.
      * 
      */
-    public get parentFolder() {
-        return new Folder(this, "ParentFolder");
+    public get contentTypeOrder(): QueryableCollection {
+        return new QueryableCollection(this, "contentTypeOrder");
+    }
+
+    /**
+     * Gets this folder's files
+     * 
+     */
+    public get files(): Files {
+        return new Files(this);
     }
 
     /**
@@ -60,11 +93,35 @@ export class Folder extends QueryableInstance {
     }
 
     /**
+     * Gets this folder's item count
+     * 
+     */
+    public get itemCount(): Queryable {
+        return new Queryable(this, "itemCount");
+    }
+
+    /**
+     * Gets this folder's list item
+     * 
+     */
+    public get listItemAllFields(): Item {
+        return new Item(this, "listItemAllFields");
+    }
+
+    /**
      * Gets the folders name
      * 
      */
     public get name(): Queryable {
-        return new Queryable(this, "Name");
+        return new Queryable(this, "name");
+    }
+
+    /**
+     * Gets the parent folder, if available
+     * 
+     */
+    public get parentFolder() {
+        return new Folder(this, "parentFolder");
     }
 
     /**
@@ -72,7 +129,7 @@ export class Folder extends QueryableInstance {
      * 
      */
     public get properties(): QueryableInstance {
-        return new QueryableInstance(this, "Properties");
+        return new QueryableInstance(this, "properties");
     }
 
     /**
@@ -80,14 +137,47 @@ export class Folder extends QueryableInstance {
      * 
      */
     public get serverRelativeUrl(): Queryable {
-        return new Queryable(this, "ServerRelativeUrl");
+        return new Queryable(this, "serverRelativeUrl");
     }
 
     /**
-     * Gets this folder's files
+     * Gets a value that specifies the content type order.
      * 
      */
-    public get files(): Files {
-        return new Files(this);
+    public get uniqueContentTypeOrder(): QueryableCollection {
+        return new QueryableCollection(this, "uniqueContentTypeOrder");
     }
+
+    /**
+     * Gets this folder's welcome page
+     */
+    public get welcomePage(): Queryable {
+        return new Queryable(this, "welcomePage");
+    }
+
+     /**
+     * Delete this folder
+     * 
+     * @param eTag Value used in the IF-Match header, by default "*"
+     */
+    public delete(eTag = "*"): Promise<void> {
+        return new Folder(this).post({
+            headers: {
+                "IF-Match": eTag,
+                "X-HTTP-Method": "DELETE",
+            },
+        });
+    }
+
+    /**
+     * Moves the folder to the Recycle Bin and returns the identifier of the new Recycle Bin item.
+     */
+    public recycle(): Promise<string> {
+        return new Folder(this, "recycle").post();
+    }
+}
+
+export interface FolderAddResult {
+    folder: Folder;
+    data: any;
 }

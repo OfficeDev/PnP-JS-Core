@@ -1,8 +1,7 @@
 "use strict";
 
-// import { Promise } from "es6-promise";
-import { Sequencer } from "../../Sequencer/Sequencer";
-import { ObjectHandlerBase } from "../ObjectHandlerBase/ObjectHandlerBase";
+import { Sequencer } from "../Sequencer/Sequencer";
+import { ObjectHandlerBase } from "./ObjectHandlerBase";
 import { IListInstance } from "../schema/ilistinstance";
 import { IField } from "../schema/ifield";
 
@@ -21,7 +20,7 @@ export class ObjectLists extends ObjectHandlerBase {
             clientContext.executeQueryAsync(
                 () => {
                     objects.forEach((obj, index) => {
-                        let existingObj: SP.List = jQuery.grep(lists.get_data(), (list) => {
+                        let existingObj: SP.List = lists.get_data().filter((list) => {
                             return list.get_title() === obj.Title;
                         })[0];
 
@@ -258,7 +257,9 @@ export class ObjectLists extends ObjectHandlerBase {
         });
     }
     private GetFieldXmlAttr(fieldXml: string, attr: string) {
-        return jQuery(jQuery.parseXML(fieldXml)).find("Field").attr(attr);
+        let regex = new RegExp(attr + '=[\'|\"](?:(.+?))[\'|\"]');
+        let match = regex.exec(fieldXml);
+        return match[1];
     }
     private GetFieldXml(field: IField, lists: Array<SP.List>, list: SP.List) {
         let fieldXml = "";
@@ -267,7 +268,7 @@ export class ObjectLists extends ObjectHandlerBase {
             Object.keys(field).forEach(prop => {
                 let value = field[prop];
                 if (prop === "List") {
-                    let targetList = jQuery.grep(lists, v => {
+                    let targetList = lists.filter(v => {
                         return v.get_title() === value;
                     });
                     if (targetList.length > 0) {
@@ -358,7 +359,7 @@ export class ObjectLists extends ObjectHandlerBase {
                         listViewCollections.push(l.get_views());
                         params.ClientContext.load(listViewCollections[index]);
                         obj.Views.forEach((v) => {
-                            let viewExists = jQuery.grep(listViewCollections[index].get_data(), (ev) => {
+                            let viewExists = listViewCollections[index].get_data().filter((ev) => {
                                 if (obj.RemoveExistingViews && obj.Views.length > 0) {
                                     ev.deleteObject();
                                     return false;

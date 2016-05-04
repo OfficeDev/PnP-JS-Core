@@ -84,7 +84,7 @@ export class PnPClientStorageWrapper implements PnPClientStore {
      * @param getter A function which will upon execution provide the desired value
      * @param expire Optional, if provided the expiration of the item, otherwise the default is used
      */
-    public getOrPut<T>(key: string, getter: () => T, expire?: Date): T {
+    public getOrPut<T>(key: string, getter: () => Promise<T>, expire?: Date): Promise<T> {
         if (!this.enabled) {
             return getter();
         }
@@ -93,14 +93,19 @@ export class PnPClientStorageWrapper implements PnPClientStore {
             throw "Function expected for parameter 'getter'.";
         }
 
-        let o = this.get<T>(key);
+        return new Promise((resolve, reject) => {
 
-        if (o == null) {
-            o = getter();
-            this.put(key, o);
-        }
+            let o = this.get<T>(key);
 
-        return o;
+            if (o == null) {
+                getter().then((d) => {
+                    this.put(key, d);
+                    resolve(d);
+                });
+            } else {
+                resolve(o);
+            }
+        });
     }
 
     /**

@@ -12,16 +12,22 @@ import { UserProfileQuery } from "./userprofiles";
  */
 export class Rest {
 
-
     /**
      * Executes a search against this web context
      * 
      * @param query The SearchQuery definition
      */
-    public search(query: SearchQuery): Promise<SearchResult> {
-        return new Search("_api/search", query).execute().then(function(results) {
-            return results;
-        });
+    public search(query: string | SearchQuery): Promise<SearchResult> {
+
+        let finalQuery: SearchQuery;
+
+        if (typeof query === "string") {
+            finalQuery = { Querytext: query };
+        } else {
+            finalQuery = query;
+        }
+
+        return new Search("_api/search", finalQuery).execute();
     }
 
     /**

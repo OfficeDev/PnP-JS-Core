@@ -1,8 +1,7 @@
 "use strict";
 
-// import { Promise } from "es6-promise";
-import { replaceUrlTokens } from "../../../../sharepoint/util";
-import { ObjectHandlerBase } from "../ObjectHandlerBase/ObjectHandlerBase";
+import { replaceUrlTokens } from "../../../sharepoint/util";
+import { ObjectHandlerBase } from "./ObjectHandlerBase";
 import { IFile } from "../schema/ifile";
 import { IWebPart } from "../schema/iwebpart";
 import { IHiddenView } from "../schema/ihiddenview";

@@ -4,18 +4,6 @@ import * as Collections from "../collections/Collections";
 import * as Args from "./args";
 
 /**
- * A set of logging levels
- * 
- */
-export enum LogLevel {
-    Verbose = 0,
-    Info = 1,
-    Warning = 2,
-    Error = 3,
-    Off = 99
-}
-
-/**
  * Interface that defines a log entry
  * 
  */
@@ -27,7 +15,7 @@ export interface LogEntry {
     /**
      * The level of information this message represents
      */
-    level: LogLevel;
+    level: Logger.LogLevel;
     /**
      * Any associated data that a given logging listener may choose to log or ignore
      */
@@ -55,6 +43,14 @@ export class Logger {
 
     private static _instance: LoggerImpl;
 
+    public static get activeLogLevel(): Logger.LogLevel {
+        return Logger.instance.activeLogLevel;
+    }
+
+    public static set activeLogLevel(value: Logger.LogLevel) {
+        Logger.instance.activeLogLevel = value;
+    }
+
     private static get instance(): LoggerImpl {
         if (typeof Logger._instance === "undefined" || Logger._instance === null) {
             Logger._instance = new LoggerImpl();
@@ -65,9 +61,12 @@ export class Logger {
     /**
      * Adds an ILogListener instance to the set of subscribed listeners
      * 
+     * @param listeners One or more listeners to subscribe to this log
      */
-    public static subscribe(listener: LogListener): void {
-        Logger.instance.subscribe(listener);
+    public static subscribe(...listeners: LogListener[]): void {
+        for (let i = 0; i < listeners.length; i++) {
+            Logger.instance.subscribe(listeners[i]);
+        }
     }
 
     /**
@@ -90,7 +89,7 @@ export class Logger {
      * @param message The message to write
      * @param level [Optional] if supplied will be used as the level of the entry (Default: LogLevel.Verbose)
      */
-    public static write(message: string, level: LogLevel = LogLevel.Verbose) {
+    public static write(message: string, level: Logger.LogLevel = Logger.LogLevel.Verbose) {
         Logger.instance.log({ level: level, message: message });
     }
 
@@ -116,7 +115,7 @@ export class Logger {
 
 class LoggerImpl {
 
-    constructor(public activeLogLevel: LogLevel = LogLevel.Warning, private subscribers: LogListener[] = []) { }
+    constructor(public activeLogLevel: Logger.LogLevel = Logger.LogLevel.Warning, private subscribers: LogListener[] = []) { }
 
     public subscribe(listener: LogListener): void {
 
@@ -135,7 +134,7 @@ class LoggerImpl {
         return this.subscribers.length;
     }
 
-    public write(message: string, level: LogLevel = LogLevel.Verbose) {
+    public write(message: string, level: Logger.LogLevel = Logger.LogLevel.Verbose) {
         this.log({ level: level, message: message });
     }
 
@@ -163,128 +162,146 @@ class LoggerImpl {
 }
 
 /**
- * Implementation of ILogListener which logs to the browser console
- * 
+ * This module is merged with the Logger class and then exposed via the API as path of pnp.log
  */
-export class ConsoleListener implements LogListener {
+export module Logger {
 
     /**
-     * Any associated data that a given logging listener may choose to log or ignore
+     * A set of logging levels
      * 
-     * @param entry The information to be logged 
      */
-    public log(entry: LogEntry): void {
+    export enum LogLevel {
+        Verbose = 0,
+        Info = 1,
+        Warning = 2,
+        Error = 3,
+        Off = 99
+    }
 
-        let msg = this.format(entry);
+    /**
+     * Implementation of ILogListener which logs to the browser console
+     * 
+     */
+    export class ConsoleListener implements LogListener {
 
-        switch (entry.level) {
-            case LogLevel.Verbose:
-            case LogLevel.Info:
-                console.log(msg);
-                break;
-            case LogLevel.Warning:
-                console.warn(msg);
-                break;
-            case LogLevel.Error:
-                console.error(msg);
-                break;
+        /**
+         * Any associated data that a given logging listener may choose to log or ignore
+         * 
+         * @param entry The information to be logged 
+         */
+        public log(entry: LogEntry): void {
+
+            let msg = this.format(entry);
+
+            switch (entry.level) {
+                case LogLevel.Verbose:
+                case LogLevel.Info:
+                    console.log(msg);
+                    break;
+                case LogLevel.Warning:
+                    console.warn(msg);
+                    break;
+                case LogLevel.Error:
+                    console.error(msg);
+                    break;
+            }
+        }
+
+        /**
+         * Formats the message
+         * 
+         * @param entry The information to format into a string
+         */
+        private format(entry: LogEntry): string {
+            return "Message: " + entry.message + ". Data: " + JSON.stringify(entry.data);
         }
     }
 
+    /* tslint:disable */
     /**
-     * Formats the message
+     * Implementation of ILogListener which logs to Azure Insights
      * 
-     * @param entry The information to format into a string
      */
-    private format(entry: LogEntry): string {
-        return "Message: " + entry.message + ". Data: " + JSON.stringify(entry.data);
-    }
-}
+    export class AzureInsightsListener implements LogListener {
 
-/* tslint:disable */
-/**
- * Implementation of ILogListener which logs to Azure Insights
- * 
- */
-export class AzureInsightsListener implements LogListener {
+        /** 
+         * Creats a new instance of the AzureInsightsListener class
+         * 
+         * @constructor
+         * @param azureInsightsInstrumentationKey The instrumentation key created when the Azure Insights instance was created
+         */
+        constructor(private azureInsightsInstrumentationKey: string) {
+            Args.stringIsNullOrEmpty(azureInsightsInstrumentationKey, "azureInsightsInstrumentationKey");
 
-    /** 
-     * Creats a new instance of the AzureInsightsListener class
-     * 
-     * @constructor
-     * @param azureInsightsInstrumentationKey The instrumentation key created when the Azure Insights instance was created
-     */
-    constructor(private azureInsightsInstrumentationKey: string) {
-        Args.stringIsNullOrEmpty(azureInsightsInstrumentationKey, "azureInsightsInstrumentationKey");
-
-        let appInsights = window["appInsights"] || function (config) {
-            function r(config) {
-                t[config] = function () {
-                    let i = arguments;
-                    t.queue.push(function () { t[config].apply(t, i) });
+            let appInsights = window["appInsights"] || function (config) {
+                function r(config) {
+                    t[config] = function () {
+                        let i = arguments;
+                        t.queue.push(function () { t[config].apply(t, i) });
+                    }
                 }
-            }
-            let t: any = { config: config }, u = document, e: any = window, o = "script", s: any = u.createElement(o), i, f;
-            for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;) {
-                r("track" + i.pop());
-            }
-            return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) {
-                let s = f && f(config, r, u, e, o);
-                return s !== !0 && t["_" + i](config, r, u, e, o), s
-            }), t
-        } ({
-            instrumentationKey: this.azureInsightsInstrumentationKey
-        });
+                let t: any = { config: config }, u = document, e: any = window, o = "script", s: any = u.createElement(o), i, f;
+                for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;) {
+                    r("track" + i.pop());
+                }
+                return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) {
+                    let s = f && f(config, r, u, e, o);
+                    return s !== !0 && t["_" + i](config, r, u, e, o), s
+                }), t
+            } ({
+                instrumentationKey: this.azureInsightsInstrumentationKey
+            });
 
-        window["appInsights"] = appInsights;
-    }
+            window["appInsights"] = appInsights;
+        }
 
-    /**
-     * Any associated data that a given logging listener may choose to log or ignore
-     * 
-     * @param entry The information to be logged 
-     */
-    public log(entry: LogEntry): void {
-        let ai: any = window["appInsights"];
-        let msg = this.format(entry);
-        if (entry.level === LogLevel.Error) {
-            ai.trackException(msg);
-        } else {
-            ai.trackEvent(msg);
+        /**
+         * Any associated data that a given logging listener may choose to log or ignore
+         * 
+         * @param entry The information to be logged 
+         */
+        public log(entry: LogEntry): void {
+            let ai: any = window["appInsights"];
+            let msg = this.format(entry);
+            if (entry.level === LogLevel.Error) {
+                ai.trackException(msg);
+            } else {
+                ai.trackEvent(msg);
+            }
+        }
+
+        /**
+         * Formats the message
+         * 
+         * @param entry The information to format into a string
+         */
+        private format(entry: LogEntry): string {
+            return "Message: " + entry.message + ". Data: " + JSON.stringify(entry.data);
         }
     }
+    /* tslint:enable */
 
     /**
-     * Formats the message
+     * Implementation of ILogListener which logs to the supplied function
      * 
-     * @param entry The information to format into a string
      */
-    private format(entry: LogEntry): string {
-        return "Message: " + entry.message + ". Data: " + JSON.stringify(entry.data);
-    }
-}
-/* tslint:enable */
+    export class FunctionListener implements LogListener {
 
-/**
- * Implementation of ILogListener which logs to the supplied function
- * 
- */
-export class FunctionListener implements LogListener {
+        /** 
+         * Creates a new instance of the FunctionListener class
+         * 
+         * @constructor
+         * @param  method The method to which any logging data will be passed
+         */
+        constructor(private method: (entry: LogEntry) => void) { }
 
-    /** 
-     * Creates a new instance of the FunctionListener class
-     * 
-     * @constructor
-     * @param  method The method to which any logging data will be passed
-     */
-    constructor(private method: (entry: LogEntry) => void) { }
-
-    /**
-     * Any associated data that a given logging listener may choose to log or ignore
-     * 
-     * @param entry The information to be logged 
-     */
-    public log(entry: LogEntry): void {
-        this.method(entry);
+        /**
+         * Any associated data that a given logging listener may choose to log or ignore
+         * 
+         * @param entry The information to be logged 
+         */
+        public log(entry: LogEntry): void {
+            this.method(entry);
+        }
     }
 }

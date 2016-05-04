@@ -1,11 +1,8 @@
 "use strict";
 
-/// <reference path="../../../utils/util" />
-
 import { IComposedLook } from "../schema/icomposedlook";
-
-import { replaceUrlTokens, getRelativeUrl } from "../../../util";
-import { ObjectHandlerBase } from "../ObjectHandlerBase/ObjectHandlerBase";
+import { replaceUrlTokens, getRelativeUrl } from "../../util";
+import { ObjectHandlerBase } from "./ObjectHandlerBase";
 
 export class ObjectComposedLook extends ObjectHandlerBase {
     constructor() {

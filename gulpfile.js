@@ -84,4 +84,5 @@ require("./buildtasks/istanbul-hook.js");
 require("./buildtasks/lint.js");
 require("./buildtasks/package.js");
 require("./buildtasks/serve.js");
+require("./buildtasks/sync.js");
 require("./buildtasks/test.js");

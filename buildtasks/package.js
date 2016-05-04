@@ -47,17 +47,19 @@ function packageDefinitions() {
 function packageLib() {
 
     var src = global.TSWorkspace.Files.slice(0);
-    src.push("./typings/main/ambient/sharepoint/index.d.ts");
-    src.push("./typings/main/ambient/whatwg-fetch/index.d.ts");
-    src.push("./typings/main/ambient/microsoft.ajax/index.d.ts");
-    src.push("./typings/main/ambient/jquery/index.d.ts");
+    src.push(global.TSTypings.Main);
+    // use these only instead of main when targetting es6
+    // src.push("./typings/main/ambient/sharepoint/index.d.ts");
+    // src.push("./typings/main/ambient/whatwg-fetch/index.d.ts");
+    // src.push("./typings/main/ambient/microsoft.ajax/index.d.ts");
+    // src.push("./typings/main/ambient/jquery/index.d.ts");
 
     // setup our es6 project
     var packageProject = tsc.createProject({
         "declaration": true,
         "removeComments": false,
-        "module": "es6",
-        "target": "es6",
+        "module": "es5",
+        "target": "es5",
         "jsx": "react"
     });
 

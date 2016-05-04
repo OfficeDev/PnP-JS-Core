@@ -40,7 +40,9 @@ export class Lists extends QueryableCollection {
      * @param title The Id of the list  
      */
     public getById(id: string): List {
-        return new List(this.toUrl().concat(`(guid'${id}')`));
+        let list = new List(this);
+        list.concat(`(guid'${id}')`);
+        return list;
     }
 
     /**
@@ -224,7 +226,12 @@ export class List extends QueryableSecurable {
             },
         }).then((data) => {
 
-            let retList = properties.hasOwnProperty("Title") ? new List(this.parentUrl, `getByTitle('${properties["Title"]}')`) : this;
+            let retList: List = this;
+
+            if (properties.hasOwnProperty("Title")) {
+                retList = this.getParent(List);
+                retList.append(`getByTitle('${properties["Title"]}')`);
+            }
 
             return {
                 data: data,

@@ -1,9 +1,8 @@
 "use strict";
 
-// import { Promise } from "es6-promise";
-import { encodePropertyKey } from "../../../../sharepoint/util";
-import { ObjectHandlerBase } from "../ObjectHandlerBase/ObjectHandlerBase";
-import { IPropertyBagEntry } from "../../schema/ipropertybagentry";
+import { encodePropertyKey } from "../../../sharepoint/util";
+import { ObjectHandlerBase } from "./ObjectHandlerBase";
+import { IPropertyBagEntry } from "../schema/ipropertybagentry";
 
 export class ObjectPropertyBagEntries extends ObjectHandlerBase {
     constructor() {

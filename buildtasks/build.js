@@ -23,9 +23,11 @@ gulp.task("build", ["lint", "build-typings", "clean"], function () {
     var src = global.TSWorkspace.Files.slice(0);
     src.push(global.TSTypings.Main);
 
+//        .js.pipe(replace(/(\(function \(factory\) {)/g, '$1/* istanbul ignore next */'))
+
     return gulp.src(src)
         .pipe(tsc(global.tsProject))
-        .js.pipe(replace(/(\(function \(factory\) {)/g, '$1/* istanbul ignore next */'))
         .pipe(gulp.dest(global.TSCompiledOutput.RootFolder))
         .pipe(print());
 });
+

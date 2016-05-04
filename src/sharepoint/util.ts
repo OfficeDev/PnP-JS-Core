@@ -19,7 +19,7 @@ export function getRelativeUrl(url: string) {
  * Retrieves the node with the given title from a collection of SP.NavigationNode
  */
 export function getNodeFromCollectionByTitle(nodeCollection: Array<SP.NavigationNode>, title: string) {
-    const f = jQuery.grep(nodeCollection, (val: SP.NavigationNode) => {
+    const f = nodeCollection.filter((val: SP.NavigationNode) => {
         return val.get_title() === title;
     });
     return f[0] || null;
@@ -30,7 +30,7 @@ export function getNodeFromCollectionByTitle(nodeCollection: Array<SP.Navigation
  */
 export function replaceUrlTokens(url: string) {
     return url.replace(/{site}/g, _spPageContextInfo.webAbsoluteUrl)
-              .replace(/{sitecollection}/g, _spPageContextInfo.siteAbsoluteUrl);
+        .replace(/{sitecollection}/g, _spPageContextInfo.siteAbsoluteUrl);
 };
 
 export function encodePropertyKey(propKey) {

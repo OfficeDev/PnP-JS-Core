@@ -1,7 +1,6 @@
 "use strict";
 
-// import { Promise } from "es6-promise";
-import { ObjectHandlerBase } from "../ObjectHandlerBase/ObjectHandlerBase";
+import { ObjectHandlerBase } from "./ObjectHandlerBase";
 import { ICustomAction } from "../schema/icustomaction";
 
 export class ObjectCustomActions extends ObjectHandlerBase {
@@ -17,7 +16,7 @@ export class ObjectCustomActions extends ObjectHandlerBase {
             clientContext.executeQueryAsync(
                 () => {
                     customactions.forEach((obj) => {
-                        let objExists = jQuery.grep(userCustomActions.get_data(), (userCustomAction) => {
+                        let objExists = userCustomActions.get_data().filter((userCustomAction) => {
                             return userCustomAction.get_title() === obj.Title;
                         }).length > 0;
                         if (!objExists) {

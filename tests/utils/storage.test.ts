@@ -30,9 +30,10 @@ describe("Storage", () => {
         });
 
         it("Use getOrPut to add a value using a getter function and return it", () => {
-            wrapper.getOrPut("test", function() { return "value"; });
-            let ret = wrapper.get("test");
-            expect(ret).to.eq("value");
+            wrapper.getOrPut("test", function () { return new Promise((r, n) => "value"); }).then(function () {
+                let ret = wrapper.get("test");
+                expect(ret).to.eq("value");
+            });
         });
     });
 });

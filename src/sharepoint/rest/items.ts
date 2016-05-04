@@ -41,7 +41,7 @@ export class Items extends QueryableCollection {
      */
     public add(properties: TypedHash<string | number | boolean> = {}): Promise<ItemAddResult> {
 
-        let parentList = new QueryableInstance(this.parentUrl);
+        let parentList = this.getParent(QueryableInstance);
 
         return parentList.select("ListItemEntityTypeFullName").get().then((d) => {
 
@@ -147,7 +147,7 @@ export class Item extends QueryableSecurable {
      */
     public update(properties: TypedHash<string | number | boolean>, eTag = "*"): Promise<ItemUpdateResult> {
 
-        let parentList = new QueryableInstance(this.parentUrl.substr(0, this.parentUrl.lastIndexOf("/")));
+        let parentList = this.getParent(QueryableInstance, this.parentUrl.substr(0, this.parentUrl.lastIndexOf("/")));
 
         return parentList.select("ListItemEntityTypeFullName").get().then((d) => {
 

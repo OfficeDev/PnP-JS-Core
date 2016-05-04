@@ -172,6 +172,20 @@ export class Queryable {
     }
 
     /**
+     * Gets a parent for this isntance as specified
+     * 
+     * @param factory The contructor for the class to create
+     */
+    protected getParent<T extends Queryable>(factory: { new (q: string | Queryable): T }, baseUrl: string | Queryable = this.parentUrl): T {
+        let parent = new factory(baseUrl);
+        let target = this.query.get("@target");
+        if (target !== null) {
+            parent.query.add("@target", target);
+        }
+        return parent;
+    }
+
+    /**
      * Default parser used to simply the parsing of standard SharePoint results
      * 
      * @param r Response object from a successful fetch request
