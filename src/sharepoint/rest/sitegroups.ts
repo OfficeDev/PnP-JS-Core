@@ -6,7 +6,7 @@ import { Queryable, QueryableInstance, QueryableCollection } from "./Queryable";
  * Describes a collection of site users
  *
  */
-export class SiteUsers extends QueryableCollection {
+export class SiteGroups extends QueryableCollection {
 
     /**
      * Creates a new instance of the SiteUsers class
@@ -23,8 +23,8 @@ export class SiteUsers extends QueryableCollection {
      * @param email The email of the user
      * @param expandUsersGroups boolean Whether or not to expand the user's groups.  Default: false
      */
-    public getByEmail(email: string, expandUsersGroups = false): User {
-        return new User(this.toUrl(), `getByEmail('\"${email}\"')`);
+    public getByEmail(email: string, expandUsersGroups = false): Group {
+        return new Group(this.toUrl(), `getByEmail('\"${email}\"')`);
     }
 
     /**
@@ -41,8 +41,8 @@ export class SiteUsers extends QueryableCollection {
      *
      * @param loginName The email address of the user
      */
-    public getByLoginName(loginName: string, expandUsersGroups = false): User {
-        return new User(this.toUrl(), `getByloginName('${loginName}')`);
+    public getByLoginName(loginName: string, expandUsersGroups = false): Group {
+        return new Group(this.toUrl(), `getByloginName('${loginName}')`);
     }
 
     /**
@@ -66,8 +66,8 @@ export class SiteUsers extends QueryableCollection {
      *
      * @param loginName The login name of the user
      */
-    public removeByLoginName(loginName: string): User {
-        return new User(this.toUrl(), `removeByloginName('${loginName}')`);
+    public removeByLoginName(loginName: string): Group {
+        return new Group(this.toUrl(), `removeByloginName('${loginName}')`);
     }
 }
 
@@ -76,7 +76,7 @@ export class SiteUsers extends QueryableCollection {
  * Describes a single user
  *
  */
-export class User extends QueryableInstance {
+export class Group extends QueryableInstance {
     /**
      * Creates a new instance of the User class
      *
@@ -87,12 +87,12 @@ export class User extends QueryableInstance {
         super(baseUrl, path);
     }
 
-    public get loginName(): string {
+    public get allowMembersEditMembership(): string {
         this.append("LoginName");
         return "";
     }
 
-    public set loginName(value) {
+    public set allowMembersEditMembership(value) {
         this.append("LoginName");
     }
 
