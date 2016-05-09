@@ -2,17 +2,17 @@
 
 import { Queryable, QueryableCollection, QueryableInstance } from "./Queryable";
 import { TypedHash } from "../../collections/collections";
-import * as Util from "../../utils/util";
+import { Util } from "../../utils/util";
 
 /**
  * Describes the views available in the current context
- * 
+ *
  */
 export class Views extends QueryableCollection {
 
     /**
      * Creates a new instance of the Views class
-     * 
+     *
      * @param baseUrl The url or Queryable which forms the parent of this fields collection
      */
     constructor(baseUrl: string | Queryable) {
@@ -21,7 +21,7 @@ export class Views extends QueryableCollection {
 
     /**
      * Gets a view by guid id
-     * 
+     *
      * @param id The GUID id of the view
      */
     public getById(id: string): View {
@@ -32,7 +32,7 @@ export class Views extends QueryableCollection {
 
     /**
      * Gets a view by title (case-sensitive)
-     * 
+     *
      * @param title The case-sensitive title of the view
      */
     public getByTitle(title: string): View {
@@ -41,7 +41,7 @@ export class Views extends QueryableCollection {
 
     /**
      * Adds a new view to the collection
-     * 
+     *
      * @param title The new views's title
      * @param personalView True if this is a personal view, otherwise false, default = false
      * @param additionalSettings Will be passed as part of the view creation body
@@ -68,13 +68,13 @@ export class Views extends QueryableCollection {
 
 /**
  * Describes a single View instance
- * 
+ *
  */
 export class View extends QueryableInstance {
 
     /**
      * Creates a new instance of the View class
-     * 
+     *
      * @param baseUrl The url or Queryable which forms the parent of this fields collection
      */
     constructor(baseUrl: string | Queryable, path?: string) {
@@ -86,8 +86,8 @@ export class View extends QueryableInstance {
     }
 
     /**
-     * Updates this view intance with the supplied properties 
-     * 
+     * Updates this view intance with the supplied properties
+     *
      * @param properties A plain object hash of values to update for the view
      */
     public update(properties: TypedHash<string | number | boolean>): Promise<ViewUpdateResult> {
@@ -111,7 +111,7 @@ export class View extends QueryableInstance {
 
     /**
      * Delete this view
-     * 
+     *
      */
     public delete(): Promise<void> {
         return this.post({
@@ -123,7 +123,7 @@ export class View extends QueryableInstance {
 
     /**
      * Returns the list view as HTML.
-     * 
+     *
      */
     public renderAsHtml(): Promise<string> {
         let q = new Queryable(this, "renderashtml");
@@ -146,7 +146,7 @@ export class ViewFields extends QueryableCollection {
 
     /**
      * Adds the field with the specified field internal name or display name to the collection.
-     * 
+     *
      * @param fieldTitleOrInternalName The case-sensitive internal name or display name of the field to add.
      */
     public add(fieldTitleOrInternalName: string): Promise<void> {
@@ -156,7 +156,7 @@ export class ViewFields extends QueryableCollection {
 
     /**
      * Moves the field with the specified field internal name to the specified position in the collection.
-     * 
+     *
      * @param fieldInternalName The case-sensitive internal name of the field to move.
      * @param index The zero-based index of the new position for the field.
      */
@@ -176,7 +176,7 @@ export class ViewFields extends QueryableCollection {
 
     /**
      * Removes the field with the specified field internal name from the collection.
-     * 
+     *
      * @param fieldInternalName The case-sensitive internal name of the field to remove from the view.
      */
     public remove(fieldInternalName: string): Promise<void> {

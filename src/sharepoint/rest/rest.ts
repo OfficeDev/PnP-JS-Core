@@ -3,7 +3,7 @@
 import { Search, SearchQuery, SearchResult } from "./search";
 import { Site } from "./site";
 import { Web } from "./webs";
-import * as Util from "../../utils/util";
+import { Util } from "../../utils/util";
 import { Queryable } from "./queryable";
 import { UserProfileQuery } from "./userprofiles";
 
@@ -14,7 +14,7 @@ export class Rest {
 
     /**
      * Executes a search against this web context
-     * 
+     *
      * @param query The SearchQuery definition
      */
     public search(query: string | SearchQuery): Promise<SearchResult> {
@@ -32,7 +32,7 @@ export class Rest {
 
     /**
      * Begins a site collection scoped REST request
-     * 
+     *
      */
     public get site(): Site {
         return new Site("_api", "site");
@@ -40,7 +40,7 @@ export class Rest {
 
     /**
      * Begins a web scoped REST request
-     * 
+     *
      */
     public get web(): Web {
         return new Web("_api", "web");
@@ -48,7 +48,7 @@ export class Rest {
 
     /**
      * Access to user profile methods
-     *  
+     *
      */
     public get profiles(): UserProfileQuery {
         return new UserProfileQuery("_api");
@@ -56,7 +56,7 @@ export class Rest {
 
     /**
      * Begins a cross-domain, host site scoped REST request, for use in add-in webs
-     * 
+     *
      * @param addInWebUrl The absolute url of the add-in web
      * @param hostWebUrl The absolute url of the host web
      */
@@ -66,7 +66,7 @@ export class Rest {
 
     /**
      * Begins a cross-domain, host web scoped REST request, for use in add-in webs
-     * 
+     *
      * @param addInWebUrl The absolute url of the add-in web
      * @param hostWebUrl The absolute url of the host web
      */
@@ -74,9 +74,9 @@ export class Rest {
         return this._cdImpl<Web>(Web, addInWebUrl, hostWebUrl, "web");
     }
 
-    /** 
+    /**
      * Implements the creation of cross domain REST urls
-     * 
+     *
      * @param factory The constructor of the object to create Site | Web
      * @param addInWebUrl The absolute url of the add-in web
      * @param hostWebUrl The absolute url of the host web

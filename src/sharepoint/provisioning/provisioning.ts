@@ -9,7 +9,7 @@ import { ObjectComposedLook } from "./ObjectHandlers/ObjectComposedLook";
 import { ObjectCustomActions } from "./ObjectHandlers/ObjectCustomActions";
 import { ObjectFiles } from "./ObjectHandlers/ObjectFiles";
 import { ObjectLists } from "./ObjectHandlers/ObjectLists";
-import { replaceUrlTokens } from "../../sharepoint/util";
+import { Util } from "../../sharepoint/util";
 import { Logger } from "../../utils/logging";
 import { SiteSchema } from "./schema/isiteschema";
 import { HttpClient } from "../../net/HttpClient";
@@ -36,7 +36,7 @@ export class Provisioning {
     }
 
     public applyTemplate(path: string) {
-        const url = replaceUrlTokens(path);
+        const url = Util.replaceUrlTokens(path);
 
         return new Promise((resolve, reject) => {
             this.httpClient.get(url).then((response) => {

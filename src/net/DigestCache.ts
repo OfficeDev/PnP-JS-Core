@@ -2,7 +2,7 @@
 
 import { Dictionary } from "../collections/collections";
 import { HttpClient } from "./httpClient";
-import * as Util from "../utils/util";
+import { Util } from "../utils/util";
 
 export class CachedDigest {
     public expiration: Date;

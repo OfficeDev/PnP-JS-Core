@@ -1,7 +1,7 @@
 "use strict";
 
 import { Provisioning } from "./Provisioning/Provisioning";
-import * as Util from "./Util";
+import { Util } from "./Util";
 
 export class SharePoint {
 

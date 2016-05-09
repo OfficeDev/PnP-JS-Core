@@ -1,6 +1,6 @@
 "use strict";
 
-import * as Util from "../../../src/utils/util";
+import { Util } from "../../../src/utils/util";
 import { expect } from "chai";
 import { Fields, Field } from "../../../src/sharepoint/rest/fields";
 

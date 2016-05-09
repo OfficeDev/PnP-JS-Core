@@ -1,21 +1,21 @@
 "use strict";
 
-import * as Util from "../../utils/util";
+import { Util } from "../../utils/util";
 import { Dictionary } from "../../collections/collections";
 import { HttpClient } from "../../net/HttpClient";
 
 /**
  * Queryable Base Class
- * 
+ *
  */
 export class Queryable {
 
     /**
      * Creates a new instance of the Queryable class
-     * 
+     *
      * @constructor
      * @param baseUrl A string or Queryable that should form the base part of the url
-     * 
+     *
      */
     constructor(baseUrl: string | Queryable, path?: string) {
 
@@ -51,18 +51,18 @@ export class Queryable {
     protected _query: Dictionary<string>;
 
     /**
-     * Tracks the url as it is built 
+     * Tracks the url as it is built
      */
     private _url: string;
 
     /**
-     * Stores the parent url used to create this instance, for recursing back up the tree if needed 
+     * Stores the parent url used to create this instance, for recursing back up the tree if needed
      */
     private _parentUrl: string;
 
     /**
      * Directly concatonates the supplied string to the current url, not normalizing "/" chars
-     * 
+     *
      * @param pathPart The string to concatonate to the url
      */
     public concat(pathPart: string) {
@@ -71,8 +71,8 @@ export class Queryable {
 
     /**
      * Appends the given string and normalizes "/" chars
-     * 
-     * @param pathPart The string to append 
+     *
+     * @param pathPart The string to append
      */
     protected append(pathPart: string) {
         this._url = Util.combinePaths(this._url, pathPart);
@@ -80,7 +80,7 @@ export class Queryable {
 
     /**
      * Gets the parent url used when creating this instance
-     * 
+     *
      */
     protected get parentUrl(): string {
         return this._parentUrl;
@@ -88,7 +88,7 @@ export class Queryable {
 
     /**
      * Provides access to the query builder for this url
-     * 
+     *
      */
     public get query(): Dictionary<string> {
         return this._query;
@@ -96,7 +96,7 @@ export class Queryable {
 
     /**
      * Gets the currentl url, made server relative or absolute based on the availability of the _spPageContextInfo object
-     * 
+     *
      */
     public toUrl(): string {
         if (!Util.isUrlAbsolute(this._url)) {
@@ -114,7 +114,7 @@ export class Queryable {
 
     /**
      * Gets the full url with query information
-     * 
+     *
      */
     public toUrlAndQuery(): string {
         let url = this.toUrl();
@@ -128,7 +128,7 @@ export class Queryable {
 
     /**
      * Executes the currently built request
-     * 
+     *
      */
     public get(parser: (r: Response) => Promise<any> = this.defaultParser): Promise<any> {
         let client = new HttpClient();
@@ -173,7 +173,7 @@ export class Queryable {
 
     /**
      * Gets a parent for this isntance as specified
-     * 
+     *
      * @param factory The contructor for the class to create
      */
     protected getParent<T extends Queryable>(factory: { new (q: string | Queryable): T }, baseUrl: string | Queryable = this.parentUrl): T {
@@ -187,7 +187,7 @@ export class Queryable {
 
     /**
      * Default parser used to simply the parsing of standard SharePoint results
-     * 
+     *
      * @param r Response object from a successful fetch request
      */
     private defaultParser(r: Response): Promise<any> {
@@ -207,7 +207,7 @@ export class Queryable {
 
 /**
  * Represents a REST collection which can be filtered, paged, and selected
- * 
+ *
  */
 export class QueryableCollection extends Queryable {
 
@@ -225,7 +225,7 @@ export class QueryableCollection extends Queryable {
 
 /**
  * Represents an instance that can be selected
- * 
+ *
  */
 export class QueryableInstance extends Queryable {
 

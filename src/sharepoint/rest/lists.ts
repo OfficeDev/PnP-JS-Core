@@ -6,19 +6,19 @@ import { ContentTypes } from "./contenttypes";
 import { Fields } from "./fields";
 import { Queryable, QueryableCollection } from "./queryable";
 import { QueryableSecurable } from "./QueryableSecurable";
-import * as Util from "../../utils/util";
+import { Util } from "../../utils/util";
 import { TypedHash } from "../../collections/collections";
 import * as Types from "./types";
 
 /**
  * Describes a collection of List objects
- * 
+ *
  */
 export class Lists extends QueryableCollection {
 
     /**
      * Creates a new instance of the Lists class
-     * 
+     *
      * @param baseUrl The url or Queryable which forms the parent of this fields collection
      */
     constructor(baseUrl: string | Queryable, path = "lists") {
@@ -27,8 +27,8 @@ export class Lists extends QueryableCollection {
 
     /**
      * Gets a list from the collection by title
-     * 
-     * @param title The title of the list 
+     *
+     * @param title The title of the list
      */
     public getByTitle(title: string): List {
         return new List(this, `getByTitle('${title}')`);
@@ -36,8 +36,8 @@ export class Lists extends QueryableCollection {
 
     /**
      * Gets a list from the collection by guid id
-     * 
-     * @param title The Id of the list  
+     *
+     * @param title The Id of the list
      */
     public getById(id: string): List {
         let list = new List(this);
@@ -47,7 +47,7 @@ export class Lists extends QueryableCollection {
 
     /**
      * Adds a new list to the collection
-     * 
+     *
      * @param title The new list's title
      * @param description The new list's description
      * @param template The list template value
@@ -103,13 +103,13 @@ export class Lists extends QueryableCollection {
 
 /**
  * Describes a single List instance
- * 
+ *
  */
 export class List extends QueryableSecurable {
 
     /**
      * Creates a new instance of the Lists class
-     * 
+     *
      * @param baseUrl The url or Queryable which forms the parent of this fields collection
      * @param path Optional, if supplied will be appended to the supplied baseUrl
      */
@@ -119,7 +119,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the content types in this list
-     * 
+     *
      */
     public get contentTypes(): ContentTypes {
         return new ContentTypes(this);
@@ -127,7 +127,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the items in this list
-     * 
+     *
      */
     public get items(): Items {
         return new Items(this);
@@ -135,7 +135,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the views in this list
-     * 
+     *
      */
     public get views(): Views {
         return new Views(this);
@@ -143,7 +143,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the fields in this list
-     * 
+     *
      */
     public get fields(): Fields {
         return new Fields(this);
@@ -151,7 +151,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the default view of this list
-     * 
+     *
      */
     public get defaultView(): Queryable {
         return new Queryable(this, "DefaultView");
@@ -159,7 +159,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the effective base permissions of this list
-     * 
+     *
      */
     public get effectiveBasePermissions(): Queryable {
         return new Queryable(this, "EffectiveBasePermissions");
@@ -167,7 +167,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the event receivers attached to this list
-     * 
+     *
      */
     public get eventReceivers(): QueryableCollection {
         return new QueryableCollection(this, "EventReceivers");
@@ -175,7 +175,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the related fields of this list
-     * 
+     *
      */
     public get relatedFields(): Queryable {
         return new Queryable(this, "getRelatedFields");
@@ -183,7 +183,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the IRM settings for this list
-     * 
+     *
      */
     public get informationRightsManagementSettings(): Queryable {
         return new Queryable(this, "InformationRightsManagementSettings");
@@ -191,7 +191,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets the user custom actions attached to this list
-     * 
+     *
      */
     public get userCustomActions(): Queryable {
         return new Queryable(this, "UserCustomActions");
@@ -199,15 +199,15 @@ export class List extends QueryableSecurable {
 
     /**
      * Gets a view by view guid id
-     * 
+     *
      */
     public getView(viewId: string): View {
         return new View(this, `getView('${viewId}')`);
     }
 
     /**
-     * Updates this list intance with the supplied properties 
-     * 
+     * Updates this list intance with the supplied properties
+     *
      * @param properties A plain object hash of values to update for the list
      * @param eTag Value used in the IF-Match header, by default "*"
      */
@@ -243,7 +243,7 @@ export class List extends QueryableSecurable {
 
     /**
      * Delete this list
-     * 
+     *
      * @param eTag Value used in the IF-Match header, by default "*"
      */
     public delete(eTag = "*"): Promise<void> {

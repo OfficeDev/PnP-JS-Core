@@ -1,6 +1,6 @@
 "use strict";
 
-import * as Util from "./utils/Util";
+import { Util } from "./utils/Util";
 import { SharePoint } from "./SharePoint/SharePoint";
 import { PnPClientStorage } from "./utils/Storage";
 import * as Configuration from "./configuration/configuration";
@@ -32,7 +32,7 @@ export default class PnP {
     public static storage: PnPClientStorage = new PnPClientStorage();
 
     /**
-     * Global configuration instance to which providers can be added 
+     * Global configuration instance to which providers can be added
      */
     public static configuration = Configuration;
 

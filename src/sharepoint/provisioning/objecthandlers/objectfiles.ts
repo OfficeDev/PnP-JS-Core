@@ -1,6 +1,6 @@
 "use strict";
 
-import { replaceUrlTokens } from "../../../sharepoint/util";
+import { Util } from "../../../sharepoint/util";
 import { ObjectHandlerBase } from "./ObjectHandlerBase";
 import { IFile } from "../schema/ifile";
 import { IWebPart } from "../schema/iwebpart";
@@ -21,7 +21,7 @@ export class ObjectFiles extends ObjectHandlerBase {
                 const filename = this.GetFilenameFromFilePath(obj.Dest);
                 const webServerRelativeUrl = _spPageContextInfo.webServerRelativeUrl;
                 const folder = web.getFolderByServerRelativeUrl(`${webServerRelativeUrl}/${this.GetFolderFromFilePath(obj.Dest)}`);
-                promises.push(jQuery.get(replaceUrlTokens(obj.Src), (fileContents) => {
+                promises.push(jQuery.get(Util.replaceUrlTokens(obj.Src), (fileContents) => {
                     let f: any = {};
                     jQuery.extend(f, obj, { "Filename": filename, "Folder": folder, "Contents": fileContents });
                     fileInfos.push(f);
@@ -95,7 +95,7 @@ export class ObjectFiles extends ObjectHandlerBase {
                 if (wp.Contents.FileUrl) {
                     promises.push((() => {
                         return new Promise((res, rej) => {
-                            let fileUrl = replaceUrlTokens(wp.Contents.FileUrl);
+                            let fileUrl = Util.replaceUrlTokens(wp.Contents.FileUrl);
                             jQuery.get(fileUrl, (xml) => {
                                 webParts[index].Contents.Xml = xml;
                                 res();
@@ -126,7 +126,7 @@ export class ObjectFiles extends ObjectHandlerBase {
                                 if (!wp.Contents.Xml) {
                                     return;
                                 }
-                                let oWebPartDefinition = limitedWebPartManager.importWebPart(replaceUrlTokens(wp.Contents.Xml));
+                                let oWebPartDefinition = limitedWebPartManager.importWebPart(Util.replaceUrlTokens(wp.Contents.Xml));
                                 let oWebPart = oWebPartDefinition.get_webPart();
                                 limitedWebPartManager.addWebPart(oWebPart, wp.Zone, wp.Order);
                             });

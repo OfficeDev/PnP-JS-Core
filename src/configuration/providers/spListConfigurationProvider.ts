@@ -2,9 +2,9 @@ import {IConfigurationProvider} from "../configuration";
 import {TypedHash} from "../../collections/collections";
 import { default as CachingConfigurationProvider } from "./cachingConfigurationProvider";
 import { Web } from "../../sharepoint/rest/webs";
-import * as Util from "../../utils/util";
+import { Util } from "../../utils/util";
 
-/** 
+/**
  * A configuration provider which loads configuration values from a SharePoint list
  *
  */
@@ -20,7 +20,7 @@ export default class SPListConfigurationProvider implements IConfigurationProvid
 
     /**
      * Gets the url of the SharePoint site, where the configuration list is located
-     * 
+     *
      * @return {string} Url address of the site
      */
     public getWebUrl(): string {
@@ -29,7 +29,7 @@ export default class SPListConfigurationProvider implements IConfigurationProvid
 
     /**
      * Gets the title of the SharePoint list, which contains the configuration settings
-     * 
+     *
      * @return {string} List title
      */
     public getListTitle(): string {
@@ -38,7 +38,7 @@ export default class SPListConfigurationProvider implements IConfigurationProvid
 
     /**
      * Loads the configuration values from the SharePoint list
-     * 
+     *
      * @return {Promise<TypedHash<string>>} Promise of loaded configuration values
      */
     public getConfiguration(): Promise<TypedHash<string>> {
@@ -55,7 +55,7 @@ export default class SPListConfigurationProvider implements IConfigurationProvid
 
     /**
      * Wraps the current provider in a cache enabled provider
-     * 
+     *
      * @return {CachingConfigurationProvider} Caching providers which wraps the current provider
      */
     public asCaching(): CachingConfigurationProvider {

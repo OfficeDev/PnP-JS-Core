@@ -2,7 +2,7 @@
 
 import { FetchClient } from "./fetchClient";
 import { DigestCache } from "./digestCache";
-import * as Util from "../utils/util";
+import { Util } from "../utils/util";
 
 export class HttpClient {
 
