@@ -1,7 +1,7 @@
 "use strict";
 
 import { IComposedLook } from "../schema/icomposedlook";
-import { replaceUrlTokens, getRelativeUrl } from "../../util";
+import { Util } from "../util";
 import { ObjectHandlerBase } from "./ObjectHandlerBase";
 
 export class ObjectComposedLook extends ObjectHandlerBase {
@@ -13,10 +13,10 @@ export class ObjectComposedLook extends ObjectHandlerBase {
         return new Promise((resolve, reject) => {
             let clientContext = SP.ClientContext.get_current();
             let web = clientContext.get_web();
-            let colorPaletteUrl = object.ColorPaletteUrl ? replaceUrlTokens(object.ColorPaletteUrl) : "";
-            let fontSchemeUrl = object.FontSchemeUrl ? replaceUrlTokens(object.FontSchemeUrl) : "";
-            let backgroundImageUrl = object.BackgroundImageUrl ? replaceUrlTokens(object.BackgroundImageUrl) : null;
-            web.applyTheme(getRelativeUrl(colorPaletteUrl), getRelativeUrl(fontSchemeUrl), backgroundImageUrl, true);
+            let colorPaletteUrl = object.ColorPaletteUrl ? Util.replaceUrlTokens(object.ColorPaletteUrl) : "";
+            let fontSchemeUrl = object.FontSchemeUrl ? Util.replaceUrlTokens(object.FontSchemeUrl) : "";
+            let backgroundImageUrl = object.BackgroundImageUrl ? Util.replaceUrlTokens(object.BackgroundImageUrl) : null;
+            web.applyTheme(Util.getRelativeUrl(colorPaletteUrl), Util.getRelativeUrl(fontSchemeUrl), backgroundImageUrl, true);
             web.update();
             clientContext.executeQueryAsync(
                 () => {

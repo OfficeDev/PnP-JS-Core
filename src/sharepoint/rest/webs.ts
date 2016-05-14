@@ -9,9 +9,8 @@ import { ContentTypes } from "./contentTypes";
 import { Folders, Folder } from "./folders";
 import { File } from "./files";
 import { TypedHash } from "../../collections/collections";
-import * as Util from "../../utils/util";
+import { Util } from "../../utils/util";
 import * as Types from "./types";
-import { Locale } from "../../types/locale";
 import { List } from "./lists";
 
 
@@ -22,7 +21,7 @@ export class Webs extends QueryableCollection {
 
     /**
      * Adds a new web to the collection
-     * 
+     *
      * @param title The new web's title
      * @param url The new web's relative url
      * @param description The web web's description
@@ -36,7 +35,7 @@ export class Webs extends QueryableCollection {
         url: string,
         description = "",
         template = "STS",
-        language = Locale.EnglishUnitedStates,
+        language = 1033,
         inheritPermissions = true,
         additionalSettings: TypedHash<string | number | boolean> = {}): Promise<WebAddResult> {
 
@@ -69,11 +68,18 @@ export class Webs extends QueryableCollection {
 
 /**
  * Describes a web
- * 
+ *
  */
 export class Web extends QueryableSecurable {
 
     constructor(baseUrl: string | Queryable, path?: string) {
+
+        let urlStr = baseUrl as string;
+        if (urlStr.indexOf("_api") < 0) {
+            // try and handle the case where someone created a new web/site and didn't append _api
+            baseUrl = Util.combinePaths(urlStr, "_api");
+        }
+
         super(baseUrl, path);
     }
 
@@ -83,7 +89,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Get the content types available in this web
-     * 
+     *
      */
     public get contentTypes(): ContentTypes {
         return new ContentTypes(this);
@@ -91,7 +97,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Get the lists in this web
-     * 
+     *
      */
     public get lists(): Lists {
         return new Lists(this);
@@ -99,7 +105,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Get the navigation options in this web
-     * 
+     *
      */
     public get navigation(): Navigation {
         return new Navigation(this);
@@ -107,7 +113,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Gets the site users
-     * 
+     *
      */
     public get siteUsers(): SiteUsers {
         return new SiteUsers(this);
@@ -115,7 +121,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Get the folders in this web
-     * 
+     *
      */
     public get folders(): Folders {
         return new Folders(this);
@@ -123,7 +129,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Get a folder by server relative url
-     * 
+     *
      * @param folderRelativeUrl the server relative path to the folder (including /sites/ if applicable)
      */
     public getFolderByServerRelativeUrl(folderRelativeUrl: string): Folder {
@@ -132,7 +138,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Get a file by server relative url
-     * 
+     *
      * @param fileRelativeUrl the server relative path to the file (including /sites/ if applicable)
      */
     public getFileByServerRelativeUrl(fileRelativeUrl: string): File {
@@ -140,8 +146,8 @@ export class Web extends QueryableSecurable {
     }
 
     /**
-     * Updates this web intance with the supplied properties 
-     * 
+     * Updates this web intance with the supplied properties
+     *
      * @param properties A plain object hash of values to update for the web
      */
     public update(properties: TypedHash<string | number | boolean>): Promise<WebUpdateResult> {
@@ -165,7 +171,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Delete this web
-     * 
+     *
      */
     public delete(): Promise<void> {
         return this.post({
@@ -177,7 +183,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Applies the theme specified by the contents of each of the files specified in the arguments to the site.
-     * 
+     *
      * @param colorPaletteUrl Server-relative URL of the color palette file.
      * @param fontSchemeUrl Server-relative URL of the font scheme.
      * @param backgroundImageUrl Server-relative URL of the background image.
@@ -198,7 +204,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Applies the specified site definition or site template to the Web site that has no template applied to it.
-     * 
+     *
      * @param template Name of the site definition or the name of the site template
      */
     public applyWebTemplate(template: string): Promise<void> {
@@ -210,7 +216,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Returns whether the current user has the given set of permissions.
-     * 
+     *
      * @param perms The high and low permission range.
      */
     public doesUserHavePermissions(perms: Types.BasePermissions): Promise<boolean> {
@@ -222,7 +228,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Checks whether the specified login name belongs to a valid user in the site. If the user doesn't exist, adds the user to the site.
-     * 
+     *
      * @param loginName The login name of the user (ex: i:0#.f|membership|user@domain.onmicrosoft.com)
      */
     public ensureUser(loginName: string): Promise<any> {
@@ -238,17 +244,17 @@ export class Web extends QueryableSecurable {
 
     /**
      * Returns a collection of site templates available for the site.
-     * 
+     *
      * @param language The LCID of the site templates to get.
      * @param true to include language-neutral site templates; otherwise false
      */
-    public availableWebTemplates(language = Locale.EnglishUnitedStates, includeCrossLanugage = true): QueryableCollection {
+    public availableWebTemplates(language = 1033, includeCrossLanugage = true): QueryableCollection {
         return new QueryableCollection(this, `getavailablewebtemplates(lcid=${language}, doincludecrosslanguage=${includeCrossLanugage})`);
     }
 
     /**
      * Returns the list gallery on the site.
-     * 
+     *
      * @param type The gallery type
      */
     /* tslint:disable member-access */
@@ -275,7 +281,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Gets the custom list templates for the site.
-     * 
+     *
      */
     public get customListTemplate(): QueryableCollection {
         return new QueryableCollection(this, "getcustomlisttemplates");
@@ -283,7 +289,7 @@ export class Web extends QueryableSecurable {
 
     /**
      * Returns the user corresponding to the specified member identifier for the current site.
-     * 
+     *
      * @param id The ID of the user.
      */
     public getUserById(id: number): QueryableInstance {
@@ -293,10 +299,10 @@ export class Web extends QueryableSecurable {
 
     /**
      * Returns the name of the image file for the icon that is used to represent the specified file.
-     * 
+     *
      * @param filename The file name. If this parameter is empty, the server returns an empty string.
      * @param size The size of the icon: 16x16 pixels = 0, 32x32 pixels = 1.
-     * @param progId The ProgID of the application that was used to create the file, in the form OLEServerName.ObjectName 
+     * @param progId The ProgID of the application that was used to create the file, in the form OLEServerName.ObjectName
      */
     public mapToIcon(filename: string, size = 0, progId = ""): Promise<string> {
         let q = new Web(this, `maptoicon(filename='${filename}', progid='${progId}', size=${size})`);

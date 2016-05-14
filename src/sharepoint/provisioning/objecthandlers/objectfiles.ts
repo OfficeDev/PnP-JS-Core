@@ -1,6 +1,7 @@
 "use strict";
 
-import { replaceUrlTokens } from "../../../sharepoint/util";
+import * as CoreUtil from "../../../utils/util";
+import { Util } from "../util";
 import { ObjectHandlerBase } from "./ObjectHandlerBase";
 import { IFile } from "../schema/ifile";
 import { IWebPart } from "../schema/iwebpart";
@@ -18,53 +19,71 @@ export class ObjectFiles extends ObjectHandlerBase {
             const fileInfos: Array<IFileInfo> = [];
             let promises = [];
             objects.forEach((obj, index) => {
-                const filename = this.GetFilenameFromFilePath(obj.Dest);
-                const webServerRelativeUrl = _spPageContextInfo.webServerRelativeUrl;
-                const folder = web.getFolderByServerRelativeUrl(`${webServerRelativeUrl}/${this.GetFolderFromFilePath(obj.Dest)}`);
-                promises.push(jQuery.get(replaceUrlTokens(obj.Src), (fileContents) => {
-                    let f: any = {};
-                    jQuery.extend(f, obj, { "Filename": filename, "Folder": folder, "Contents": fileContents });
-                    fileInfos.push(f);
+                promises.push(this.httpClient.fetchRaw(Util.replaceUrlTokens(obj.Src)).then((response) => {
+                    return response.text();
                 }));
             });
-            jQuery.when.apply(jQuery, promises).done(() => {
-                fileInfos.forEach((f, index) => {
-                    if (f.Filename.indexOf("Form.aspx") !== -1) {
+            Promise.all(promises).then((responses: any[]) => {
+                responses.forEach((response, index) => {
+                    let obj = objects[index];
+                    const filename = this.GetFilenameFromFilePath(obj.Dest);
+                    const webServerRelativeUrl = _spPageContextInfo.webServerRelativeUrl;
+                    const folder = web.getFolderByServerRelativeUrl(`${webServerRelativeUrl}/${this.GetFolderFromFilePath(obj.Dest)}`);
+                    let fi: IFileInfo = {
+                        Contents: response,
+                        Dest: obj.Dest,
+                        Filename: filename,
+                        Folder: folder,
+                        Instance: null,
+                        Overwrite: false,
+                        Properties: [],
+                        RemoveExistingWebParts: true,
+                        ServerRelativeUrl: obj.Dest,
+                        Src: obj.Src,
+                        Views: [],
+                        WebParts: [],
+                    };
+
+                    CoreUtil.Util.extend(fi, obj);
+
+                    if (fi.Filename.indexOf("Form.aspx") !== -1) {
                         return;
                     }
                     let objCreationInformation = new SP.FileCreationInformation();
-                    objCreationInformation.set_overwrite(f.Overwrite !== undefined ? f.Overwrite : false);
-                    objCreationInformation.set_url(f.Filename);
+                    objCreationInformation.set_overwrite(fi.Overwrite);
+                    objCreationInformation.set_url(fi.Filename);
                     objCreationInformation.set_content(new SP.Base64EncodedByteArray());
-                    for (let i = 0; i < f.Contents.length; i++) {
-                        objCreationInformation.get_content().append(f.Contents.charCodeAt(i));
+                    for (let i = 0; i < fi.Contents.length; i++) {
+                        objCreationInformation.get_content().append(fi.Contents.charCodeAt(i));
                     }
-                    clientContext.load(f.Folder.get_files().add(objCreationInformation));
-                });
+                    clientContext.load(fi.Folder.get_files().add(objCreationInformation));
 
-                clientContext.executeQueryAsync(() => {
-                    promises = [];
-                    objects.forEach((obj) => {
-                        if (obj.Properties && Object.keys(obj.Properties).length > 0) {
-                            promises.push(this.ApplyFileProperties(obj.Dest, obj.Properties));
-                        }
-                        if (obj.WebParts && obj.WebParts.length > 0) {
-                            promises.push(this.AddWebPartsToWebPartPage(obj.Dest, obj.Src, obj.WebParts, obj.RemoveExistingWebParts));
-                        }
-                    });
-                    Promise.all(promises).then(() => {
-                        this.ModifyHiddenViews(objects).then(() => {
-                            super.scope_ended();
-                            resolve();
-                        }, () => {
-                            super.scope_ended();
-                            resolve();
-                        });
-                    });
-                }, () => {
-                    super.scope_ended();
-                    resolve();
+                    fileInfos.push(fi);
                 });
+            });
+
+            clientContext.executeQueryAsync(() => {
+                promises = [];
+                fileInfos.forEach((fi) => {
+                    if (fi.Properties && Object.keys(fi.Properties).length > 0) {
+                        promises.push(this.ApplyFileProperties(fi.Dest, fi.Properties));
+                    }
+                    if (fi.WebParts && fi.WebParts.length > 0) {
+                        promises.push(this.AddWebPartsToWebPartPage(fi.Dest, fi.Src, fi.WebParts, fi.RemoveExistingWebParts));
+                    }
+                });
+                Promise.all(promises).then(() => {
+                    this.ModifyHiddenViews(objects).then((value) => {
+                        super.scope_ended();
+                        resolve(value);
+                    }, (error) => {
+                        super.scope_ended();
+                        reject(error);
+                    });
+                });
+            }, (error) => {
+                super.scope_ended();
+                reject(error);
             });
         });
     }
@@ -84,8 +103,8 @@ export class ObjectFiles extends ObjectHandlerBase {
                         wp.deleteWebPart();
                     });
                     clientContext.load(existingWebParts);
-                    clientContext.executeQueryAsync(resolve, resolve);
-                }, resolve);
+                    clientContext.executeQueryAsync(resolve, reject);
+                }, reject);
         });
     }
     private GetWebPartXml(webParts: Array<IWebPart>) {
@@ -93,19 +112,26 @@ export class ObjectFiles extends ObjectHandlerBase {
             let promises = [];
             webParts.forEach((wp, index) => {
                 if (wp.Contents.FileUrl) {
+                    let fileUrl = Util.replaceUrlTokens(wp.Contents.FileUrl);
+                    promises.push(this.httpClient.fetchRaw(fileUrl).then((response) => {
+                        return response.text();
+                    }));
+                } else {
                     promises.push((() => {
                         return new Promise((res, rej) => {
-                            let fileUrl = replaceUrlTokens(wp.Contents.FileUrl);
-                            jQuery.get(fileUrl, (xml) => {
-                                webParts[index].Contents.Xml = xml;
-                                res();
-                            }).fail(rej);
+                            res();
                         });
                     })());
                 }
             });
 
-            Promise.all(promises).then(() => {
+            Promise.all(promises).then((responses) => {
+                responses.forEach((response, index) => {
+                    let wp = webParts[index];
+                    if (wp !== null && response && response.length > 0) {
+                        wp.Contents.Xml = response;
+                    }
+                });
                 resolve(webParts);
             });
         });
@@ -126,7 +152,7 @@ export class ObjectFiles extends ObjectHandlerBase {
                                 if (!wp.Contents.Xml) {
                                     return;
                                 }
-                                let oWebPartDefinition = limitedWebPartManager.importWebPart(replaceUrlTokens(wp.Contents.Xml));
+                                let oWebPartDefinition = limitedWebPartManager.importWebPart(Util.replaceUrlTokens(wp.Contents.Xml));
                                 let oWebPart = oWebPartDefinition.get_webPart();
                                 limitedWebPartManager.addWebPart(oWebPart, wp.Zone, wp.Order);
                             });
@@ -175,7 +201,7 @@ export class ObjectFiles extends ObjectHandlerBase {
                 }
                 obj.Views.forEach((v) => {
                     mapping[v.List] = mapping[v.List] || [];
-                    mapping[v.List].push(jQuery.extend(v, { "Url": obj.Dest }));
+                    mapping[v.List].push(CoreUtil.Util.extend(v, { "Url": obj.Dest }));
                 });
             });
             Object.keys(mapping).forEach((l, index) => {

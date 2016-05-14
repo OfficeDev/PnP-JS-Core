@@ -2,6 +2,7 @@
 
 import { Queryable, QueryableInstance } from "./Queryable";
 import { Web } from "./webs";
+import { Util } from "../../utils/util";
 
 /**
  * Describes a site collection
@@ -15,6 +16,13 @@ export class Site extends QueryableInstance {
      * @param baseUrl The url or Queryable which forms the parent of this fields collection
      */
     constructor(baseUrl: string, path?: string) {
+
+        let urlStr = baseUrl as string;
+        if (urlStr.indexOf("_api") < 0) {
+            // try and handle the case where someone created a new web/site and didn't append _api
+            baseUrl = Util.combinePaths(urlStr, "_api");
+        }
+
         super(baseUrl, path);
     }
 
@@ -50,7 +58,7 @@ export class Site extends QueryableInstance {
      * 
      * @param absolutePageUrl The absolute url of the page
      */
-    public getWebUrlFromPageUrl (absolutePageUrl: string): Promise<string> {
+    public getWebUrlFromPageUrl(absolutePageUrl: string): Promise<string> {
         let q = new Queryable("_api/sp.web.getweburlfrompageurl(@v)");
         q.query.add("@v", "'" + absolutePageUrl + "'");
         return q.get();

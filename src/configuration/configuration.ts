@@ -4,11 +4,6 @@ import * as Collections from "../collections/collections";
 import * as providers from "./providers/providers";
 
 /**
- * Set of pre-defined providers which are available from this library
- */
-export let Providers = providers;
-
-/**
  * Interface for configuration providers
  * 
  */
@@ -34,6 +29,11 @@ export class Settings {
     constructor() {
         this._settings = new Collections.Dictionary<string>();
     }
+
+    /**
+     * Set of pre-defined providers which are available from this library
+     */
+    public Providers = providers;
 
     /** 
      * The settings currently stored in this instance
@@ -65,8 +65,15 @@ export class Settings {
      * 
      * @param {Collections.TypedHash<any>} hash The set of values to add
      */
-    public apply(hash: Collections.TypedHash<any>): void {
-        this._settings.merge(hash);
+    public apply(hash: Collections.TypedHash<any>): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            try {
+                this._settings.merge(hash);
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 
     /**

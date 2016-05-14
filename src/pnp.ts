@@ -1,9 +1,8 @@
 "use strict";
 
-import * as Util from "./utils/Util";
-import { SharePoint } from "./SharePoint/SharePoint";
+import { Util } from "./utils/Util";
 import { PnPClientStorage } from "./utils/Storage";
-import * as Configuration from "./configuration/configuration";
+import { Settings } from "./configuration/configuration";
 import { Logger } from "./utils/logging";
 import { Rest } from "./SharePoint/Rest/rest";
 
@@ -11,15 +10,11 @@ import { Rest } from "./SharePoint/Rest/rest";
  * Root class of the Patterns and Practices namespace, provides an entry point to the library
  */
 export default class PnP {
+
     /**
      * Utility methods
      */
     public static util = Util;
-
-    /**
-     * The full SharePoint library
-     */
-    public static sharepoint = new SharePoint();
 
     /**
      * Provides easy access to the REST interface
@@ -29,12 +24,12 @@ export default class PnP {
     /**
      * Provides access to local and session storage
      */
-    public static storage: PnPClientStorage = new PnPClientStorage();
+    public static storage = new PnPClientStorage();
 
     /**
-     * Global configuration instance to which providers can be added 
+     * Global configuration instance to which providers can be added
      */
-    public static configuration = Configuration;
+    public static config = new Settings();
 
     /**
      * Global logging instance to which subscribers can be registered and messages written

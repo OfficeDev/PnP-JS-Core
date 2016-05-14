@@ -1,6 +1,6 @@
 "use strict";
 
-import { encodePropertyKey } from "../../../sharepoint/util";
+import { Util } from "../util";
 import { ObjectHandlerBase } from "./ObjectHandlerBase";
 import { IPropertyBagEntry } from "../schema/ipropertybagentry";
 
@@ -22,7 +22,7 @@ export class ObjectPropertyBagEntries extends ObjectHandlerBase {
                     let entry = entries[i];
                     propBag.set_item(entry.Key, entry.Value);
                     if (entry.Indexed) {
-                        indexedProperties.push(encodePropertyKey(entry.Key));
+                        indexedProperties.push(Util.encodePropertyKey(entry.Key));
                     };
                 };
                 web.update();

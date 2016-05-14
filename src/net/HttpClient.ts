@@ -2,7 +2,7 @@
 
 import { FetchClient } from "./fetchClient";
 import { DigestCache } from "./digestCache";
-import * as Util from "../utils/util";
+import { Util } from "../utils/util";
 
 export class HttpClient {
 
@@ -60,7 +60,46 @@ export class HttpClient {
     }
 
     public fetchRaw(url: string, options: any = {}): Promise<Response> {
-        return this._impl.fetch(url, options);
+
+        let retry = (ctx): void => {
+
+            this._impl.fetch(url, options).then((response) => ctx.resolve(response)).catch((response) => {
+
+                // grab our current delay
+                let delay = ctx.delay;
+
+                // Check if request was throttled - http status code 429 
+                // Check is request failed due to server unavailable - http status code 503 
+                if (response.status !== 429 && response.status !== 503) {
+                    ctx.reject(response);
+                }
+
+                // Increment our counters.
+                ctx.delay *= 2;
+                ctx.attempts++;
+
+                // If we have exceeded the retry count, reject.
+                if (ctx.retryCount <= ctx.attempts) {
+                    ctx.reject(response);
+                }
+
+                // Set our retry timeout for {delay} milliseconds.
+                setTimeout(Util.getCtxCallback(this, retry, ctx), delay);
+            });
+        };
+
+        return new Promise((resolve, reject) => {
+
+            let retryContext = {
+                attempts: 0,
+                delay: 100,
+                reject: reject,
+                resolve: resolve,
+                retryCount: 7,
+            };
+
+            retry.call(this, retryContext);
+        });
     }
 
     public get(url: string, options: any = {}): Promise<Response> {

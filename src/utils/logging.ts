@@ -1,7 +1,6 @@
 "use strict";
 
 import * as Collections from "../collections/Collections";
-import * as Args from "./args";
 
 /**
  * Interface that defines a log entry
@@ -118,9 +117,6 @@ class LoggerImpl {
     constructor(public activeLogLevel: Logger.LogLevel = Logger.LogLevel.Warning, private subscribers: LogListener[] = []) { }
 
     public subscribe(listener: LogListener): void {
-
-        Args.objectIsNull(listener, "listener");
-
         this.subscribers.push(listener);
     }
 
@@ -139,10 +135,7 @@ class LoggerImpl {
     }
 
     public log(entry: LogEntry) {
-
-        Args.objectIsNull(entry, "entry");
-
-        if (entry.level < this.activeLogLevel) {
+        if (typeof entry === "undefined" || entry.level < this.activeLogLevel) {
             return;
         }
 
@@ -231,8 +224,6 @@ export module Logger {
          * @param azureInsightsInstrumentationKey The instrumentation key created when the Azure Insights instance was created
          */
         constructor(private azureInsightsInstrumentationKey: string) {
-            Args.stringIsNullOrEmpty(azureInsightsInstrumentationKey, "azureInsightsInstrumentationKey");
-
             let appInsights = window["appInsights"] || function (config) {
                 function r(config) {
                     t[config] = function () {

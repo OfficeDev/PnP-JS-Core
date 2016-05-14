@@ -22,7 +22,7 @@ global.TSCompiledOutput = {
         '!build/**/*.test.js'
     ],
     "JSTestFiles": [
-        'build/**/*.test.js'
+        'build/**/*.test.js',
     ],
 };
 

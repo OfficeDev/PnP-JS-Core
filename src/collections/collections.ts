@@ -1,6 +1,6 @@
 "use strict";
 
-import * as Util from "../utils/util";
+import { Util } from "../utils/util";
 
 /**
  * Interface defining an object with a known property type
@@ -16,7 +16,7 @@ export class Dictionary<T> {
 
     /**
      * Creates a new instance of the Dictionary<T> class
-     * 
+     *
      * @constructor
      */
     constructor() {
@@ -36,7 +36,7 @@ export class Dictionary<T> {
 
     /**
      * Gets a value from the collection using the specified key
-     * 
+     *
      * @param key The key whose value we want to return, returns null if the key does not exist
      */
     public get(key: string): T {
@@ -49,7 +49,7 @@ export class Dictionary<T> {
 
     /**
      * Adds the supplied key and value to the dictionary
-     * 
+     *
      * @param key The key to add
      * @param o The value to add
      */
@@ -88,7 +88,7 @@ export class Dictionary<T> {
 
     /**
      * Removes a value from the dictionary
-     * 
+     *
      * @param key The key of the key/value pair to remove. Returns null if the key was not found.
      */
     public remove(key: string): T {

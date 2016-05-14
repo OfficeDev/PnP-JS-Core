@@ -1,7 +1,7 @@
 "use strict";
 
 import { expect } from "chai";
-import * as Util from "../../src/utils/util";
+import { Util } from "../../src/utils/util";
 // import MockLocation = require("../mocks/MockLocation");
 
 // let location: Location;

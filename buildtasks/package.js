@@ -34,14 +34,24 @@ function packageDefinitions() {
 
     var src = global.TSWorkspace.Files.slice(0);
     src.push(global.TSTypings.Main);
+    src.push("!src/sharepoint/provisioning/**/*.*");
+
+    var src2 = ["src/sharepoint/provisioning/**/*.ts"];
+    src2.push(global.TSTypings.Main);
 
     // create a project specific to our typings build and specify the outFile. This will result
     // in a single pnp.d.ts file being creating and piped to the typings folder
-    var typingsProject = tsc.createProject('tsconfig.json', { "declaration": true, "outFile": "pnp.js" });
+    var typingsProject = tsc.createProject('tsconfig.json', { "declaration": true, "outFile": "pnp.js", "removeComments": false });
+    var typingsProject2 = tsc.createProject('tsconfig.json', { "declaration": true, "outFile": "pnp-provisioning.js", "removeComments": false });
 
-    return gulp.src(src)
-        .pipe(tsc(typingsProject))
-        .dts.pipe(gulp.dest(global.TSDist.RootFolder));
+    return merge([
+        gulp.src(src)
+            .pipe(tsc(typingsProject))
+            .dts.pipe(gulp.dest(global.TSDist.RootFolder)),
+        gulp.src(src2)
+            .pipe(tsc(typingsProject2))
+            .dts.pipe(gulp.dest(global.TSDist.RootFolder))
+    ]);
 }
 
 function packageLib() {
@@ -54,7 +64,7 @@ function packageLib() {
     // src.push("./typings/main/ambient/microsoft.ajax/index.d.ts");
     // src.push("./typings/main/ambient/jquery/index.d.ts");
 
-    // setup our es6 project
+    // setup our es5 project to create the lib folder in dist
     var packageProject = tsc.createProject({
         "declaration": true,
         "removeComments": false,
@@ -78,7 +88,6 @@ function packageBundle() {
     return browserify('./build/src/pnp.js', {
         debug: false,
         standalone: '$pnp',
-        external: ["es6-promise", "jquery", "whatwg-fetch", "node-fetch"]
     }).ignore('*.d.ts').bundle()
         .pipe(src(global.TSDist.BundleFileName))
         .pipe(replace(/Object\.defineProperty\(exports, "__esModule", \{ value: true \}\);/ig, ""))
@@ -96,7 +105,6 @@ function packageBundleUglify() {
     return browserify('./build/src/pnp.js', {
         debug: false,
         standalone: '$pnp',
-        external: ["es6-promise", "jquery", "whatwg-fetch", "node-fetch"]
     }).ignore('*.d.ts').bundle()
         .pipe(src(global.TSDist.MinifyFileName))
         .pipe(replace(/Object\.defineProperty\(exports, "__esModule", \{ value: true \}\);/ig, ""))
@@ -109,12 +117,53 @@ function packageBundleUglify() {
         .pipe(gulp.dest(global.TSDist.RootFolder));
 }
 
+function packageProvisioningBundle() {
+
+    console.log(global.TSDist.RootFolder + "/pnp-provisioning.js");
+
+    return browserify('./build/src/sharepoint/provisioning/provisioning.js', {
+        debug: false,
+        standalone: '$pnpProvisioning',
+    }).ignore('*.d.ts').bundle()
+        .pipe(src("pnp-provisioning.js"))
+        .pipe(buffer())
+        .pipe(header(banner, { pkg: global.pkg }))
+        .pipe(gulp.dest(global.TSDist.RootFolder));
+}
+
+function packageProvisioningBundleUglify() {
+
+    console.log(global.TSDist.RootFolder + "/pnp-provisioning.min.js");
+    console.log(global.TSDist.RootFolder + "/pnp-provisioning.min.js.map");
+
+    return browserify('./build/src/sharepoint/provisioning/provisioning.js', {
+        debug: false,
+        standalone: '$pnpProvisioning',
+    }).ignore('*.d.ts').bundle()
+        .pipe(src("pnp-provisioning.min.js"))
+        .pipe(buffer())
+        .pipe(srcmaps.init({ loadMaps: true }))
+        .pipe(uglify())
+        .pipe(header(banner, { pkg: global.pkg }))
+        .pipe(srcmaps.write('./'))
+        .pipe(gulp.dest(global.TSDist.RootFolder));
+}
+
 //******************************************************************************
 //* PACKAGE
 //******************************************************************************
 gulp.task("package", ["build", "test"], function () {
-    packageDefinitions();
-    packageLib();
-    packageBundle();
-    packageBundleUglify();
+
+    return merge([
+        // build and package the definition files
+        packageDefinitions(),
+        // build and package the lib folder
+        packageLib(),
+        // bundle the core
+        packageBundle(),
+        packageBundleUglify(),
+        // bundle provisioning
+        packageProvisioningBundle(),
+        packageProvisioningBundleUglify(),
+    ]);
 });
