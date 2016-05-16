@@ -3,10 +3,22 @@
 import { ObjectHandlerBase } from "./ObjectHandlerBase";
 import { IFeature } from "../schema/ifeature";
 
+/**
+ * Describes the Features Object Handler
+ */
 export class ObjectFeatures extends ObjectHandlerBase {
+    /**
+     * Creates a new instance of the ObjectFeatures class
+     */
     constructor() {
         super("Features");
     }
+
+    /**
+     * Provisioning features
+     * 
+     * @paramm features The features to provision
+     */
     public ProvisionObjects(features: Array<IFeature>) {
         super.scope_started();
         return new Promise((resolve, reject) => {

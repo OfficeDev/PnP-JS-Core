@@ -6,11 +6,22 @@ import { INavigation } from "../schema/inavigation";
 import { INavigationNode } from "../schema/inavigationnode";
 import { HttpClient } from "../../../net/HttpClient";
 
+/**
+ * Describes the Navigation Object Handler
+ */
 export class ObjectNavigation extends ObjectHandlerBase {
+    /**
+     * Creates a new instance of the ObjectNavigation class
+     */
     constructor() {
         super("Navigation");
     }
 
+    /**
+     * Provision Navigation nodes
+     * 
+     * @param object The navigation settings and nodes to provision
+     */
     public ProvisionObjects(object: INavigation) {
         super.scope_started();
         let clientContext = SP.ClientContext.get_current();

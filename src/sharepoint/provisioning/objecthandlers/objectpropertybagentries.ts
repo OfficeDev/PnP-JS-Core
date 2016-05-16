@@ -4,10 +4,22 @@ import { Util } from "../util";
 import { ObjectHandlerBase } from "./ObjectHandlerBase";
 import { IPropertyBagEntry } from "../schema/ipropertybagentry";
 
+/**
+ * Describes the Property Bag Entries Object Handler
+ */
 export class ObjectPropertyBagEntries extends ObjectHandlerBase {
+    /**
+     * Creates a new instance of the ObjectPropertyBagEntries class
+     */
     constructor() {
         super("PropertyBagEntries");
     }
+
+    /**
+     * Provision Property Bag Entries
+     * 
+     * @param entries The entries to provision
+     */
     public ProvisionObjects(entries: Array<IPropertyBagEntry>) {
         super.scope_started();
         return new Promise((resolve, reject) => {

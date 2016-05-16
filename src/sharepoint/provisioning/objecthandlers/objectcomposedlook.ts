@@ -4,10 +4,22 @@ import { IComposedLook } from "../schema/icomposedlook";
 import { Util } from "../util";
 import { ObjectHandlerBase } from "./ObjectHandlerBase";
 
+/**
+ * Describes the Composed Look Object Handler
+ */
 export class ObjectComposedLook extends ObjectHandlerBase {
+    /**
+     * Creates a new instance of the ObjectComposedLook class
+     */
     constructor() {
         super("ComposedLook");
     }
+
+    /**
+     * Provisioning Composed Look
+     * 
+     * @param object The Composed Look to provision
+     */
     public ProvisionObjects(object: IComposedLook) {
         super.scope_started();
         return new Promise((resolve, reject) => {

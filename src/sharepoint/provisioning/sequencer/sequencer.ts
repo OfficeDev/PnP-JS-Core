@@ -1,14 +1,23 @@
+/**
+ * Descibes a Sequencer
+ */
 export class Sequencer {
     private functions: Array<any>;
     private parameter: any;
     private scope: any;
 
+    /**
+     * Creates a new instance of the Sequencer class
+     */
     constructor(__functions: any, __parameter: any, __scope: any) {
         this.parameter = __parameter;
         this.scope = __scope;
         this.functions = this.deferredArray(__functions);
     }
 
+    /**
+     * Executes the functions in sequence using DeferredObject
+     */
     public execute() {
         return new Promise((resolve, reject) => {
             let promises = [];
@@ -28,22 +37,41 @@ export class Sequencer {
             Promise.all(promises).then(resolve, reject);
         });
     }
-    private deferredArray(__functions: Array<any>) {
-        let functions = [];
+
+    /**
+     * Creates an array of DeferredObject from an array of functions
+     * 
+     * @param __functions The array of functions
+     */
+    private deferredArray(__functions: Array<Function>) {
+        let functions: Array<DeferredObject> = [];
         __functions.forEach(f => functions.push(new DeferredObject(f, this.parameter, this.scope)));
         return functions;
     }
 }
 
+/**
+ * Descibes a DeferredObject 
+ */
 class DeferredObject {
     private func: any;
     private parameter: any;
     private scope: any;
+
+    /**
+     * Creates a new instance of the DeferredObject class
+     */
     constructor(func, parameter, scope) {
         this.func = func;
         this.parameter = parameter;
         this.scope = scope;
     }
+
+    /**
+     * Executes the function
+     * 
+     * @param depFunc The dependent function
+     */
     public execute(depFunc?) {
         if (!depFunc) {
             return this.func.apply(this.scope, [this.parameter]);
