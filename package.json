@@ -2,8 +2,8 @@
   "name": "sp-pnp-js",
   "version": "0.0.14",
   "description": "A reusable JavaScript library targeting SharePoint client-side development.",
-  "main": "./lib/pnp.js",
-  "typings": "./lib/pnp",
+  "main": "./dist/pnp.js",
+  "typings": "./dist/pnp",
   "dependencies": {
     "es6-promise": "~3.1.2",
     "whatwg-fetch": "^0.11.0"
