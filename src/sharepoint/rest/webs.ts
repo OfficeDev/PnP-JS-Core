@@ -10,9 +10,11 @@ import { Folders, Folder } from "./folders";
 import { File } from "./files";
 import { TypedHash } from "../../collections/collections";
 import { Util } from "../../utils/util";
-import * as Types from "./types";
+import { Locale } from "../../types/locale";
 import { List } from "./lists";
 
+import { BasePermissions } from "../../types/basepermissions";
+import { ChangeQuery } from "../../types/changequery";
 
 export class Webs extends QueryableCollection {
     constructor(baseUrl: string | Queryable, webPath = "webs") {
@@ -219,7 +221,7 @@ export class Web extends QueryableSecurable {
      *
      * @param perms The high and low permission range.
      */
-    public doesUserHavePermissions(perms: Types.BasePermissions): Promise<boolean> {
+    public doesUserHavePermissions(perms: BasePermissions): Promise<boolean> {
         let q = new Web(this, "doesuserhavepermissions");
         q.concat(`(@p)`);
         q.query.add("@p", JSON.stringify(perms));
@@ -270,7 +272,7 @@ export class Web extends QueryableSecurable {
     /**
      * Returns the collection of changes from the change log that have occurred within the list, based on the specified query.
      */
-    public getChanges(query: Types.ChangeQuery): Promise<any> {
+    public getChanges(query: ChangeQuery): Promise<any> {
 
         let postBody = JSON.stringify({ "query": Util.extend({ "__metadata": { "type": "SP.ChangeQuery" } }, query) });
 

@@ -3,7 +3,12 @@
 import { Queryable, QueryableCollection, QueryableInstance } from "./queryable";
 import { TypedHash } from "../../collections/collections";
 import { Util } from "../../utils/util";
-import * as Types from "./types";
+
+import { XmlSchemaFieldCreationInformation } from "../../types/xmlschemafieldcreationinformation";
+import { DateTimeFieldFormatType } from "../../types/datetimefieldformattype";
+import { FieldTypes } from "../../types/fieldtypes";
+import { CalendarType } from "../../types/calendartype";
+import { UrlFieldFormatType } from "../../types/urlfieldformattype";
 
 /**
  * Describes a collection of Field objects
@@ -43,13 +48,13 @@ export class Fields extends QueryableCollection {
     /**
      * Creates a field based on the specified schema
      */
-    public createFieldAsXml(xml: string | Types.XmlSchemaFieldCreationInformation): Promise<FieldAddResult> {
+    public createFieldAsXml(xml: string | XmlSchemaFieldCreationInformation): Promise<FieldAddResult> {
 
-        let info: Types.XmlSchemaFieldCreationInformation;
+        let info: XmlSchemaFieldCreationInformation;
         if (typeof xml === "string") {
             info = { SchemaXml: xml };
         } else {
-            info = xml as Types.XmlSchemaFieldCreationInformation;
+            info = xml as XmlSchemaFieldCreationInformation;
         }
 
         let postBody: string = JSON.stringify({
@@ -122,15 +127,15 @@ export class Fields extends QueryableCollection {
     public addCalculated(
         title: string,
         formula: string,
-        dateFormat: Types.DateTimeFieldFormatType,
-        outputType: Types.FieldTypes = Types.FieldTypes.Text,
+        dateFormat: DateTimeFieldFormatType,
+        outputType: FieldTypes = FieldTypes.Text,
         properties?: TypedHash<string | number | boolean>): Promise<FieldAddResult> {
 
         let props: {
-            DateFormat: Types.DateTimeFieldFormatType;
+            DateFormat: DateTimeFieldFormatType;
             FieldTypeKind: number;
             Formula: string;
-            OutputType: Types.FieldTypes;
+            OutputType: FieldTypes;
         } = {
             DateFormat: dateFormat,
             FieldTypeKind: 17,
@@ -151,14 +156,14 @@ export class Fields extends QueryableCollection {
      */
     public addDateTime(
         title: string,
-        displayFormat: Types.DateTimeFieldFormatType = Types.DateTimeFieldFormatType.DateOnly,
-        calendarType: Types.CalendarType = Types.CalendarType.Gregorian,
+        displayFormat: DateTimeFieldFormatType = DateTimeFieldFormatType.DateOnly,
+        calendarType: CalendarType = CalendarType.Gregorian,
         friendlyDisplayFormat = 0,
         properties?: TypedHash<string | number | boolean>): Promise<FieldAddResult> {
 
         let props: {
-            DateTimeCalendarType: Types.CalendarType;
-            DisplayFormat: Types.DateTimeFieldFormatType;
+            DateTimeCalendarType: CalendarType;
+            DisplayFormat: DateTimeFieldFormatType;
             FieldTypeKind: number;
             FriendlyDisplayFormat: number;
         } = {
@@ -277,11 +282,11 @@ export class Fields extends QueryableCollection {
      */
     public addUrl(
         title: string,
-        displayFormat: Types.UrlFieldFormatType = Types.UrlFieldFormatType.Hyperlink,
+        displayFormat: UrlFieldFormatType = UrlFieldFormatType.Hyperlink,
         properties?: TypedHash<string | number | boolean>
     ): Promise<FieldAddResult> {
 
-        let props: { DisplayFormat: Types.UrlFieldFormatType; FieldTypeKind: number } = {
+        let props: { DisplayFormat: UrlFieldFormatType; FieldTypeKind: number } = {
             DisplayFormat: displayFormat,
             FieldTypeKind: 11,
         };
@@ -306,6 +311,7 @@ export class Field extends QueryableInstance {
     }
 
     /**
+<<<<<<< 91e4e99fa3f986f838d22ef8c2f8bbdd257ae84a
       * Gets a value that specifies whether the field can be deleted.
       */
     public get canBeDeleted(): Queryable {
@@ -503,6 +509,8 @@ export class Field extends QueryableInstance {
     }
 
     /**
+=======
+>>>>>>> Change imports to use split files
      * Updates this field intance with the supplied properties
      *
      * @param properties A plain object hash of values to update for the list

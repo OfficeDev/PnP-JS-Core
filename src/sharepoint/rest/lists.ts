@@ -8,7 +8,11 @@ import { Queryable, QueryableCollection } from "./queryable";
 import { QueryableSecurable } from "./QueryableSecurable";
 import { Util } from "../../utils/util";
 import { TypedHash } from "../../collections/collections";
-import * as Types from "./types";
+
+import { ChangeQuery } from "../../types/changequery";
+import { ChangeLogitemQuery } from "../../types/changelogitemquery";
+import { CamlQuery } from "../../types/camlquery";
+import { ControlMode } from "../../types/controlmode";
 
 /**
  * Describes a collection of List objects
@@ -285,7 +289,7 @@ export class List extends QueryableSecurable {
     /**
      * Returns the collection of changes from the change log that have occurred within the list, based on the specified query.
      */
-    public getChanges(query: Types.ChangeQuery): Promise<any> {
+    public getChanges(query: ChangeQuery): Promise<any> {
 
         let postBody = JSON.stringify({ "query": Util.extend({ "__metadata": { "type": "SP.ChangeQuery" } }, query) });
 
@@ -297,7 +301,7 @@ export class List extends QueryableSecurable {
     /**
      * Returns a collection of items from the list based on the specified query.
      */
-    public getItemsByCAMLQuery(query: Types.CamlQuery): Promise<any> {
+    public getItemsByCAMLQuery(query: CamlQuery): Promise<any> {
 
         let postBody = JSON.stringify({ "query": Util.extend({ "__metadata": { "type": "SP.CamlQuery" } }, query) });
 
@@ -309,7 +313,7 @@ export class List extends QueryableSecurable {
     /**
      * See: https://msdn.microsoft.com/en-us/library/office/dn292554.aspx
      */
-    public getListItemChangesSinceToken(query: Types.ChangeLogitemQuery): Promise<string> {
+    public getListItemChangesSinceToken(query: ChangeLogitemQuery): Promise<string> {
         let postBody = JSON.stringify({ "query": Util.extend({ "__metadata": { "type": "SP.ChangeLogItemQuery" } }, query) });
 
         // don't change "this" instance of the List, make a new one
@@ -339,7 +343,7 @@ export class List extends QueryableSecurable {
     /**
      * Renders list form data based on parameters provided
      */
-    public renderListFormData(itemId: number, formId: string, mode: Types.ControlMode): Promise<string> {
+    public renderListFormData(itemId: number, formId: string, mode: ControlMode): Promise<string> {
         // don't change "this" instance of the List, make a new one
         let q = new List(this, "renderlistformdata(itemid=" + itemId + ", formid='" + formId + "', mode=" + mode + ")");
         return q.post();

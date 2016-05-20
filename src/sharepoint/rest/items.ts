@@ -6,7 +6,8 @@ import { Folder } from "./folders";
 import { ContentType } from "./contenttypes";
 import { TypedHash } from "../../collections/collections";
 import { Util } from "../../utils/util";
-import * as Types from "./types";
+
+import { ListItemFormUpdateValue } from "../../types/listitemformupdatevalue";
 
 /**
  * Describes a collection of Item objects
@@ -199,7 +200,7 @@ export class Item extends QueryableSecurable {
      * @param newDocumentUpdate true if the list item is a document being updated after upload; otherwise false.
      */
     /* tslint:disable max-line-length */
-    public validateUpdateListItem(formValues: Types.ListItemFormUpdateValue[], newDocumentUpdate = false): Promise<Types.ListItemFormUpdateValue[]> {
+    public validateUpdateListItem(formValues: ListItemFormUpdateValue[], newDocumentUpdate = false): Promise<ListItemFormUpdateValue[]> {
         let postBody = JSON.stringify({ "formValues": formValues, bNewDocumentUpdate: newDocumentUpdate });
         let item = new Item(this, "validateupdatelistitem");
         return item.post({ body: postBody });
