@@ -2,82 +2,27 @@
  * Descibes a Sequencer
  */
 export class Sequencer {
-    private functions: Array<any>;
-    private parameter: any;
-    private scope: any;
-
     /**
-     * Creates a new instance of the Sequencer class
+     * Creates a new instance of the Sequencer class, and declare private variables
      */
-    constructor(__functions: any, __parameter: any, __scope: any) {
-        this.parameter = __parameter;
-        this.scope = __scope;
-        this.functions = this.deferredArray(__functions);
+    constructor(private functions:Array<any>, private parameter:any, private scope:any) {
     }
 
     /**
      * Executes the functions in sequence using DeferredObject
      */
-    public execute() {
-        return new Promise((resolve, reject) => {
-            let promises = [];
-            let index = 1;
-            promises.push(new Promise(
-                (res) => {
-                    res();
-                }
-            ));
-            while (this.functions[index - 1] !== undefined) {
-                let i = promises.length - 1;
-                promises.push(this.functions[index - 1].execute(promises[i]));
-                index++;
-            };
-            Promise.all(promises).then(resolve, reject);
-        });
-    }
-
-    /**
-     * Creates an array of DeferredObject from an array of functions
-     * 
-     * @param __functions The array of functions
-     */
-    private deferredArray(__functions: Array<Function>) {
-        let functions: Array<DeferredObject> = [];
-        __functions.forEach(f => functions.push(new DeferredObject(f, this.parameter, this.scope)));
-        return functions;
-    }
-}
-
-/**
- * Descibes a DeferredObject 
- */
-class DeferredObject {
-    private func: any;
-    private parameter: any;
-    private scope: any;
-
-    /**
-     * Creates a new instance of the DeferredObject class
-     */
-    constructor(func, parameter, scope) {
-        this.func = func;
-        this.parameter = parameter;
-        this.scope = scope;
-    }
-
-    /**
-     * Executes the function
-     * 
-     * @param depFunc The dependent function
-     */
-    public execute(depFunc?) {
-        if (!depFunc) {
-            return this.func.apply(this.scope, [this.parameter]);
-        }
-        return new Promise((resolve, reject) => {
-            depFunc.then(() => {
-                this.func.apply(this.scope, [this.parameter]).then(resolve, resolve);
+    public execute(progressFunction:any) {
+        const thisSequencer = this;//a meaningful name for the this scope
+        var promiseSequence = Promise.resolve();// empty promise to chain on
+        thisSequencer.functions.forEach( (sequenceFunction, functionNr) =>{
+            promiseSequence = promiseSequence.then(function () {// Chain function call onto the sequence
+                //console.info('executing function:',functionNr);
+                return sequenceFunction.call(thisSequencer.scope, thisSequencer.parameter);
+            }).then(function (result) {// Resolve for each function call
+                if (progressFunction) progressFunction.call(thisSequencer, functionNr, thisSequencer.functions);
+                //console.info('finished function:',functionNr,'of',thisSequencer.functions);
             });
         });
+        return promiseSequence;// This will resolve after the entire chain is resolved
     }
 }
