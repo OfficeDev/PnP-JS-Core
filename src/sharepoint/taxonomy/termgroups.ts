@@ -1,16 +1,19 @@
 "use strict";
 
-import { TaxonomySession } from "./TaxonomySession";
+import { QueryableTaxonomy } from "./QueryableTaxonomy";
 import { TermGroup } from "./TermGroup";
 
 /**
  * Root of the SharePoint TermGroups module
  */
-export class TermGroups {
-    private taxSession: TaxonomySession = new TaxonomySession();
+export class TermGroups extends QueryableTaxonomy {
     private identifier: string;
 
+     /**
+     * Creates a new instance of the TermGroups class
+     */
     constructor(identifier?: string) {
+        super("SP.Taxonomy.TermGroup");
         this.identifier = identifier;
     }
 
@@ -19,7 +22,7 @@ export class TermGroups {
      *
      * @param title The title of the Term Group
      */
-    public getByTitle(title: string): TermGroups {
+    public getByTitle(title: string): TermGroup {
         return new TermGroup(title);
     }
 
@@ -28,7 +31,7 @@ export class TermGroups {
      *
      * @param title The Id of the list
      */
-    public getById(id: string): List {
+    public getById(id: string): TermGroup {
         return new TermGroup(id);
     }
 
@@ -36,7 +39,8 @@ export class TermGroups {
         return new Promise((resolve, reject) => {
             const clientContext = SP.ClientContext.get_current();
             this.taxSession.getDefaultSiteCollectionTermStore(clientContext).then(defaultTermStore => {
-                this.taxSession.retrieveObjects(clientContext, defaultTermStore.get_groups()).then(resolve, reject);
+                this.clientObjects = defaultTermStore.get_groups();
+                this.taxSession.retrieveObjects(clientContext, this).then(resolve, reject);
             });
         });
     }

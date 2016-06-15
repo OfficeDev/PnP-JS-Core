@@ -1,5 +1,8 @@
 "use strict";
 
+import { QueryableTaxonomy } from "./QueryableTaxonomy";
+import { TaxonomyParser } from "./TaxonomyParser";
+
 /**
  * Root of the SharePoint TaxonomySession module
  */
@@ -9,7 +12,7 @@ export class TaxonomySession {
      */
     public getDefaultSiteCollectionTermStore(clientContext: SP.ClientContext): Promise<SP.Taxonomy.TermStore> {
         return new Promise<any>((resolve, reject) => {
-            this.LoadDepScripts().then(() => {
+            this.EnsureSPTaxonomy().then(() => {
                 let taxSession = SP.Taxonomy.TaxonomySession.getTaxonomySession(clientContext);
                 let termStore = taxSession.getDefaultSiteCollectionTermStore();
                 resolve(termStore);
@@ -17,11 +20,12 @@ export class TaxonomySession {
         });
     }
 
-    public retrieveObjects(clientContext: SP.ClientContext, objects: any): Promise<any> {
+    public retrieveObjects(clientContext: SP.ClientContext, qt: QueryableTaxonomy): Promise<any> {
         return new Promise<any>((resolve, reject) => {
+            let objects = qt.clientObjects;
             clientContext.load(objects);
             clientContext.executeQueryAsync(() => {
-                resolve(objects.get_data());
+                resolve(new TaxonomyParser(objects, qt.type).result());
             }, reject);
         });
     }
@@ -29,7 +33,7 @@ export class TaxonomySession {
     /**
      * Loads the scripts sp.taxonomy.js and sp.js from /_layouts/15
      */
-    private LoadDepScripts(): Promise<any> {
+    private EnsureSPTaxonomy(): Promise<any> {
         return new Promise((resolve, reject) => {
             if (SP.hasOwnProperty("Taxonomy")) {
                 resolve();
