@@ -46,9 +46,6 @@ export class TaxonomySession {
      */
     private EnsureSPTaxonomy(): Promise<any> {
         return new Promise((resolve, reject) => {
-            if (!window.hasOwnProperty("SP")) {
-                throw "You need to be in SharePoint context to use Taxonomy";
-            }
             if (SP.hasOwnProperty("Taxonomy")) {
                 resolve();
             } else {
