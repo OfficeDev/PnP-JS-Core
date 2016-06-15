@@ -12,7 +12,7 @@ export class TaxonomySession {
      */
     public getDefaultSiteCollectionTermStore(clientContext: SP.ClientContext): Promise<SP.Taxonomy.TermStore> {
         return new Promise<SP.Taxonomy.TermStore>((resolve, reject) => {
-            this.getTaxonomySession().then(taxSession => {
+            this.getTaxonomySession(clientContext).then((taxSession: SP.Taxonomy.TaxonomySession) => {
                 let termStore = taxSession.getDefaultSiteCollectionTermStore();
                 resolve(termStore);
             });
@@ -46,6 +46,9 @@ export class TaxonomySession {
      */
     private EnsureSPTaxonomy(): Promise<any> {
         return new Promise((resolve, reject) => {
+            if (!window.hasOwnProperty("SP")) {
+                throw "You need to be in SharePoint context to use Taxonomy";
+            }
             if (SP.hasOwnProperty("Taxonomy")) {
                 resolve();
             } else {
