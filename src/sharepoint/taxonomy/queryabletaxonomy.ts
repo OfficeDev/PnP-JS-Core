@@ -22,4 +22,20 @@ export class QueryableTaxonomy {
         this.clientContext = SP.ClientContext.get_current();
         this.type = type;
     }
+    public get(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            resolve({});
+        });
+    };
+
+    public print(): void {
+        this.get().then(result => {
+            console.log("Id\t\t\t\t\t\t\t\t\t\t\t\t\tName");
+            if (result.length) {
+                result.forEach(r => console.log(`${r.Id}\t\t\t\t${r.Name}`));
+            } else {
+                console.log(`${result.Id}\t\t\t\t${result.Name}`);
+            }
+        });
+    }
 };
