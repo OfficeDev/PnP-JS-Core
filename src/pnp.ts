@@ -5,6 +5,7 @@ import { PnPClientStorage } from "./utils/storage";
 import { Settings } from "./configuration/configuration";
 import { Logger } from "./utils/logging";
 import { Rest } from "./sharepoint/rest/rest";
+import { Taxonomy } from "./sharepoint/taxonomy/taxonomy";
 import { setRuntimeConfig, LibraryConfiguration } from "./configuration/pnplibconfig";
 
 /**
@@ -20,6 +21,11 @@ export const util = Util;
  * Provides access to the REST interface
  */
 export const sp = new Rest();
+
+/**
+     * Provides access to the Taxonomy interface
+*/
+export const taxonomy = new Taxonomy();
 
 /**
  * Provides access to local and session storage
@@ -63,6 +69,10 @@ let Def = {
      * Provides access to local and session storage
      */
     storage: storage,
+    /**
+     * Provides access to the Taxonomy interface
+    */
+    taxonomy: taxonomy,
     /**
      * Utility methods
      */
