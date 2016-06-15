@@ -37,10 +37,9 @@ export class TermGroups extends QueryableTaxonomy {
 
     public get(): Promise<any> {
         return new Promise((resolve, reject) => {
-            const clientContext = SP.ClientContext.get_current();
-            this.taxSession.getDefaultSiteCollectionTermStore(clientContext).then(defaultTermStore => {
+            this.taxSession.getDefaultSiteCollectionTermStore(this.clientContext).then(defaultTermStore => {
                 this.clientObjects = defaultTermStore.get_groups();
-                this.taxSession.retrieveObjects(clientContext, this).then(resolve, reject);
+                this.taxSession.retrieveObjects(this.clientContext, this).then(resolve, reject);
             });
         });
     }

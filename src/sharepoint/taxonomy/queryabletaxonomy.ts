@@ -8,6 +8,7 @@ import { TaxonomySession } from "./TaxonomySession";
  */
 export class QueryableTaxonomy {
     public taxSession: TaxonomySession;
+    public clientContext: SP.ClientContext;
     public type: string;
     public clientObjects: any;
 
@@ -18,6 +19,7 @@ export class QueryableTaxonomy {
      */
     constructor(type: string) {
         this.taxSession = new TaxonomySession();
+        this.clientContext = SP.ClientContext.get_current();
         this.type = type;
     }
 };
