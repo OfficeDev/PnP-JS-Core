@@ -11,11 +11,22 @@ export class TaxonomySession {
      * Retrieves the default site collection term store
      */
     public getDefaultSiteCollectionTermStore(clientContext: SP.ClientContext): Promise<SP.Taxonomy.TermStore> {
-        return new Promise<any>((resolve, reject) => {
-            this.EnsureSPTaxonomy().then(() => {
-                let taxSession = SP.Taxonomy.TaxonomySession.getTaxonomySession(clientContext);
+        return new Promise<SP.Taxonomy.TermStore>((resolve, reject) => {
+            this.getTaxonomySession().then(taxSession => {
                 let termStore = taxSession.getDefaultSiteCollectionTermStore();
                 resolve(termStore);
+            });
+        });
+    }
+
+     /**
+     * Retrieves the default site collection term store
+     */
+    public getTaxonomySession(clientContext: SP.ClientContext): Promise<SP.Taxonomy.TaxonomySession> {
+        return new Promise<SP.Taxonomy.TaxonomySession>((resolve, reject) => {
+            this.EnsureSPTaxonomy().then(() => {
+                let taxSession = SP.Taxonomy.TaxonomySession.getTaxonomySession(clientContext);
+                resolve(taxSession);
             });
         });
     }
