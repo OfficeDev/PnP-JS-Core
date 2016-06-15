@@ -152,6 +152,18 @@ export class Util {
         });
         return guid;
     }
+
+
+    /**
+     * Gets a random GUID value
+     *
+    */
+    public static isValidGUID(value: string): boolean {
+        let regex = /[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i;
+        let match = regex.exec(value);
+        return match != null;
+    }
+
     /* tslint:enable */
 
     /**
