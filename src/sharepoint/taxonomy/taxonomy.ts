@@ -8,7 +8,7 @@ import { TermGroups } from "./TermGroups";
 export class Taxonomy {
 
     /**
-     * Returns a new insance of TermGroup
+     * Returns a new instance of TermGroup
      */
     public get termgroups(): TermGroups {
         return new TermGroups();
