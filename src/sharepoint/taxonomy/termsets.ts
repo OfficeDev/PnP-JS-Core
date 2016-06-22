@@ -57,7 +57,7 @@ export class TermSets extends QueryableTaxonomy {
  * Describes a single TermSet instance
  *
  */
-class TermSet extends QueryableTaxonomy {
+export class TermSet extends QueryableTaxonomy {
     private groupIdentifier: string;
     private identifier: string;
 

@@ -1,6 +1,8 @@
 "use strict";
 
 import { QueryableTaxonomy } from "./QueryableTaxonomy";
+import { TermSets } from "./TermSets";
+import { Util } from "../../utils/util";
 
 /**
  * Describes a collection of TermGroup objects
@@ -51,7 +53,7 @@ export class TermGroups extends QueryableTaxonomy {
  * Describes a single TermGroup instance
  *
  */
-class TermGroup extends QueryableTaxonomy {
+export class TermGroup extends QueryableTaxonomy {
     private identifier: string;
 
     /**
