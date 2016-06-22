@@ -51,7 +51,7 @@ export class TermGroups extends QueryableTaxonomy {
  * Describes a single TermGroup instance
  *
  */
-export class TermGroup extends QueryableTaxonomy {
+class TermGroup extends QueryableTaxonomy {
     private identifier: string;
 
     /**
