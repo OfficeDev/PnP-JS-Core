@@ -39,7 +39,9 @@ export class TermGroups extends QueryableTaxonomy {
         return new Promise((resolve, reject) => {
             this.taxSession.getDefaultSiteCollectionTermStore(this.clientContext).then(defaultTermStore => {
                 this.clientObjects = defaultTermStore.get_groups();
-                this.taxSession.retrieveObjects(this.clientContext, this).then(resolve, reject);
+                this.taxSession.retrieveObjects(this.clientContext, this).then(objects => {
+                    resolve(objects);
+                }, reject);
             });
         });
     }
@@ -76,7 +78,9 @@ export class TermGroup extends QueryableTaxonomy {
                 this.clientObjects = Util.isValidGUID(this.identifier) ?
                     groups.getById(new SP.Guid(this.identifier)) :
                     groups.getByName(this.identifier);
-                this.taxSession.retrieveObjects(this.clientContext, this).then(resolve, reject);
+                this.taxSession.retrieveObjects(this.clientContext, this).then(objects => {
+                    resolve(objects);
+                }, reject);
             });
         });
     }

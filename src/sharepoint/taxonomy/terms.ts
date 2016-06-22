@@ -33,7 +33,9 @@ export class Terms extends QueryableTaxonomy {
                     termSets.getById(new SP.Guid(this.identifier)) :
                     termSets.getByName(this.identifier);
                 this.clientObjects = termSet[this.func]();
-                this.taxSession.retrieveObjects(this.clientContext, this).then(resolve, reject);
+                this.taxSession.retrieveObjects(this.clientContext, this).then(objects => {
+                    resolve(objects);
+                }, reject);
             });
         });
     }

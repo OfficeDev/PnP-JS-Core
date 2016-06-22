@@ -44,7 +44,9 @@ export class TermSets extends QueryableTaxonomy {
                     groups.getById(new SP.Guid(this.groupIdentifier)) :
                     groups.getByName(this.groupIdentifier);
                 this.clientObjects = group.get_termSets();
-                this.taxSession.retrieveObjects(this.clientContext, this).then(resolve, reject);
+                this.taxSession.retrieveObjects(this.clientContext, this).then(objects => {
+                    resolve(objects);
+                }, reject);
             });
         });
     }
@@ -86,7 +88,9 @@ export class TermSet extends QueryableTaxonomy {
                 this.clientObjects = Util.isValidGUID(this.identifier) ?
                     termSets.getById(new SP.Guid(this.identifier)) :
                     termSets.getByName(this.identifier);
-                this.taxSession.retrieveObjects(this.clientContext, this).then(resolve, reject);
+                this.taxSession.retrieveObjects(this.clientContext, this).then(objects => {
+                    resolve(objects);
+                }, reject);
             });
         });
     }
