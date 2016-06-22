@@ -1,6 +1,7 @@
 "use strict";
 
 import { QueryableTaxonomy } from "./QueryableTaxonomy";
+import { Terms } from "./Terms";
 import { Util } from "../../utils/util";
 
 /**
