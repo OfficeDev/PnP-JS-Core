@@ -155,8 +155,7 @@ export class Util {
 
 
     /**
-     * Gets a random GUID value
-     *
+     * Checks if a string is a valid GUID using regex.exec
     */
     public static isValidGUID(value: string): boolean {
         let regex = /[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i;
