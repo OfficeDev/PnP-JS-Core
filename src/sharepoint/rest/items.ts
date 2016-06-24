@@ -217,6 +217,20 @@ export class Item extends QueryableSecurable {
     }
 
     /**
+     * Gets a string representation of the full URL to the WOPI frame. 
+     * If there is no associated WOPI application, or no associated action, an empty string is returned.
+     *
+     * @param action Display mode: 0: view, 1: edit, 2: mobileView, 3: interactivePreview
+     */
+    public getWopiFrameUrl(action = 0): Promise<string> {
+        let i = new Item(this, "getWOPIFrameUrl(@action)");
+        i._query.add("@action", <any>action);
+        return i.post().then((data: { GetWOPIFrameUrl: string }) => {
+            return data.GetWOPIFrameUrl;
+        });
+    }
+
+    /**
      * Validates and sets the values of the specified collection of fields for the list item.
      *
      * @param formValues The fields to change and their new values.

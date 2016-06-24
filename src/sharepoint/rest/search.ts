@@ -293,7 +293,8 @@ export class SearchResults {
      * Creates a new instance of the SearchResult class
      * 
      */
-    constructor(response: any) {
+    constructor(rawResponse: any) {
+        let response = rawResponse.postquery ? rawResponse.postquery : rawResponse;
         this.PrimarySearchResults = this.formatSearchResults(response.PrimaryQueryResult.RelevantResults.Table.Rows);
         this.RawSearchResults = response;
         this.ElapsedTime = response.ElapsedTime;
@@ -314,15 +315,15 @@ export class SearchResults {
      * 
      * @param rawResults The array to process 
      */
-    protected formatSearchResults(rawResults: Array<any>): SearchResult[] {
+    protected formatSearchResults(rawResults: Array<any> | any): SearchResult[] {
+        let results = new Array<SearchResult>(),
+            tempResults = rawResults.results ? rawResults.results : rawResults;
 
-        let results = new Array<SearchResult>();
-
-        for (let i of rawResults) {
+        for (let i of tempResults) {
             results.push(new SearchResult(i.Cells));
         }
-        return results;
 
+        return results;
     }
 
 }
@@ -336,8 +337,8 @@ export class SearchResult {
      * Creates a new instance of the SearchResult class
      * 
      */
-    constructor(item: Array<any>) {
-
+    constructor(rawItem: Array<any> | any) {
+        let item = rawItem.results ? rawItem.results : rawItem;
         for (let i of item) {
             this[i.Key] = i.Value;
         }

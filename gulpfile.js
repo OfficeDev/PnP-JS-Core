@@ -11,7 +11,7 @@ var tsc = require("gulp-typescript");
 //******************************************************************************
 
 global.TSTypings = {
-    "Main": 'typings/main.d.ts'
+    "Main": 'typings/index.d.ts'
 };
 
 global.TSCompiledOutput = {
