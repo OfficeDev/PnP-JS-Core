@@ -1,5 +1,5 @@
 /**
- * sp-pnp-js v1.0.0 - A reusable JavaScript library targeting SharePoint client-side development.
+ * sp-pnp-js v1.0.1 - A reusable JavaScript library targeting SharePoint client-side development.
  * Copyright (c) 2016 Microsoft
  * MIT
  */
@@ -125,6 +125,94 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "../collections/collections", "../utils/util", "../sharepoint/rest/odata"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    var collections_1 = require("../collections/collections");
+    var util_1 = require("../utils/util");
+    var odata_1 = require("../sharepoint/rest/odata");
+    var CachedDigest = (function () {
+        function CachedDigest() {
+        }
+        return CachedDigest;
+    }());
+    exports.CachedDigest = CachedDigest;
+    var DigestCache = (function () {
+        function DigestCache(_httpClient, _digests) {
+            if (_digests === void 0) { _digests = new collections_1.Dictionary(); }
+            this._httpClient = _httpClient;
+            this._digests = _digests;
+        }
+        DigestCache.prototype.getDigest = function (webUrl) {
+            var self = this;
+            var cachedDigest = this._digests.get(webUrl);
+            if (cachedDigest !== null) {
+                var now = new Date();
+                if (now < cachedDigest.expiration) {
+                    return Promise.resolve(cachedDigest.value);
+                }
+            }
+            var url = util_1.Util.combinePaths(webUrl, "/_api/contextinfo");
+            return self._httpClient.fetchRaw(url, {
+                cache: "no-cache",
+                credentials: "same-origin",
+                headers: {
+                    "Accept": "application/json;odata=verbose",
+                    "Content-type": "application/json;odata=verbose;charset=utf-8",
+                },
+                method: "POST",
+            }).then(function (response) {
+                var parser = new odata_1.ODataDefaultParser();
+                return parser.parse(response).then(function (d) { return d.GetContextWebInformation; });
+            }).then(function (data) {
+                var newCachedDigest = new CachedDigest();
+                newCachedDigest.value = data.FormDigestValue;
+                var seconds = data.FormDigestTimeoutSeconds;
+                var expiration = new Date();
+                expiration.setTime(expiration.getTime() + 1000 * seconds);
+                newCachedDigest.expiration = expiration;
+                self._digests.add(webUrl, newCachedDigest);
+                return newCachedDigest.value;
+            });
+        };
+        DigestCache.prototype.clear = function () {
+            this._digests.clear();
+        };
+        return DigestCache;
+    }());
+    exports.DigestCache = DigestCache;
+});
+
+},{"../collections/collections":1,"../sharepoint/rest/odata":19,"../utils/util":21}],4:[function(require,module,exports){
+(function (global){
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    var FetchClient = (function () {
+        function FetchClient() {
+        }
+        FetchClient.prototype.fetch = function (url, options) {
+            return global.fetch(url, options);
+        };
+        return FetchClient;
+    }());
+    exports.FetchClient = FetchClient;
+});
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],5:[function(require,module,exports){
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./fetchClient", "./digestCache", "../utils/util", "../configuration/pnplibconfig"], factory);
     }
 })(function (require, exports) {
@@ -223,95 +311,7 @@
     exports.HttpClient = HttpClient;
 });
 
-},{"../configuration/pnplibconfig":2,"../utils/util":21,"./digestCache":4,"./fetchClient":5}],4:[function(require,module,exports){
-(function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../collections/collections", "../utils/util", "../sharepoint/rest/odata"], factory);
-    }
-})(function (require, exports) {
-    "use strict";
-    var collections_1 = require("../collections/collections");
-    var util_1 = require("../utils/util");
-    var odata_1 = require("../sharepoint/rest/odata");
-    var CachedDigest = (function () {
-        function CachedDigest() {
-        }
-        return CachedDigest;
-    }());
-    exports.CachedDigest = CachedDigest;
-    var DigestCache = (function () {
-        function DigestCache(_httpClient, _digests) {
-            if (_digests === void 0) { _digests = new collections_1.Dictionary(); }
-            this._httpClient = _httpClient;
-            this._digests = _digests;
-        }
-        DigestCache.prototype.getDigest = function (webUrl) {
-            var self = this;
-            var cachedDigest = this._digests.get(webUrl);
-            if (cachedDigest !== null) {
-                var now = new Date();
-                if (now < cachedDigest.expiration) {
-                    return Promise.resolve(cachedDigest.value);
-                }
-            }
-            var url = util_1.Util.combinePaths(webUrl, "/_api/contextinfo");
-            return self._httpClient.fetchRaw(url, {
-                cache: "no-cache",
-                credentials: "same-origin",
-                headers: {
-                    "Accept": "application/json;odata=verbose",
-                    "Content-type": "application/json;odata=verbose;charset=utf-8",
-                },
-                method: "POST",
-            }).then(function (response) {
-                var parser = new odata_1.ODataDefaultParser();
-                return parser.parse(response).then(function (d) { return d.GetContextWebInformation; });
-            }).then(function (data) {
-                var newCachedDigest = new CachedDigest();
-                newCachedDigest.value = data.FormDigestValue;
-                var seconds = data.FormDigestTimeoutSeconds;
-                var expiration = new Date();
-                expiration.setTime(expiration.getTime() + 1000 * seconds);
-                newCachedDigest.expiration = expiration;
-                self._digests.add(webUrl, newCachedDigest);
-                return newCachedDigest.value;
-            });
-        };
-        DigestCache.prototype.clear = function () {
-            this._digests.clear();
-        };
-        return DigestCache;
-    }());
-    exports.DigestCache = DigestCache;
-});
-
-},{"../collections/collections":1,"../sharepoint/rest/odata":19,"../utils/util":21}],5:[function(require,module,exports){
-(function (global){
-(function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports"], factory);
-    }
-})(function (require, exports) {
-    "use strict";
-    var FetchClient = (function () {
-        function FetchClient() {
-        }
-        FetchClient.prototype.fetch = function (url, options) {
-            return global.fetch(url, options);
-        };
-        return FetchClient;
-    }());
-    exports.FetchClient = FetchClient;
-});
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{"../configuration/pnplibconfig":2,"../utils/util":21,"./digestCache":3,"./fetchClient":4}],6:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -804,7 +804,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     exports.ObjectHandlerBase = ObjectHandlerBase;
 });
 
-},{"../../../net/HttpClient":3,"../../../utils/logging":20}],11:[function(require,module,exports){
+},{"../../../net/HttpClient":5,"../../../utils/logging":20}],11:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1321,7 +1321,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     exports.ObjectLists = ObjectLists;
 });
 
-},{"../Sequencer/Sequencer":16,"./ObjectHandlerBase":10}],12:[function(require,module,exports){
+},{"../Sequencer/Sequencer":17,"./ObjectHandlerBase":10}],12:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1567,75 +1567,6 @@ var __extends = (this && this.__extends) || function (d, b) {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports"], factory);
-    }
-})(function (require, exports) {
-    "use strict";
-    var ProvisioningStep = (function () {
-        function ProvisioningStep(name, index, objects, parameters, handler) {
-            this.name = name;
-            this.index = index;
-            this.objects = objects;
-            this.parameters = parameters;
-            this.handler = handler;
-        }
-        ProvisioningStep.prototype.execute = function (dependentPromise) {
-            var _this = this;
-            var _handler = new this.handler();
-            if (!dependentPromise) {
-                return _handler.ProvisionObjects(this.objects, this.parameters);
-            }
-            return new Promise(function (resolve, reject) {
-                dependentPromise.then(function () {
-                    return _handler.ProvisionObjects(_this.objects, _this.parameters).then(resolve, resolve);
-                });
-            });
-        };
-        return ProvisioningStep;
-    }());
-    exports.ProvisioningStep = ProvisioningStep;
-});
-
-},{}],16:[function(require,module,exports){
-(function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports"], factory);
-    }
-})(function (require, exports) {
-    "use strict";
-    var Sequencer = (function () {
-        function Sequencer(functions, parameter, scope) {
-            this.functions = functions;
-            this.parameter = parameter;
-            this.scope = scope;
-        }
-        Sequencer.prototype.execute = function (progressFunction) {
-            var promiseSequence = Promise.resolve();
-            this.functions.forEach(function (sequenceFunction, functionNr) {
-                promiseSequence = promiseSequence.then(function () {
-                    return sequenceFunction.call(this.scope, this.parameter);
-                }).then(function (result) {
-                    if (progressFunction) {
-                        progressFunction.call(this, functionNr, this.functions);
-                    }
-                });
-            }, this);
-            return promiseSequence;
-        };
-        return Sequencer;
-    }());
-    exports.Sequencer = Sequencer;
-});
-
-},{}],17:[function(require,module,exports){
-(function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./ProvisioningStep", "./ObjectHandlers/ObjectNavigation", "./ObjectHandlers/ObjectPropertyBagEntries", "./ObjectHandlers/ObjectFeatures", "./ObjectHandlers/ObjectWebSettings", "./ObjectHandlers/ObjectComposedLook", "./ObjectHandlers/ObjectCustomActions", "./ObjectHandlers/ObjectFiles", "./ObjectHandlers/ObjectLists", "./util", "../../utils/logging", "../../net/HttpClient"], factory);
     }
 })(function (require, exports) {
@@ -1721,7 +1652,76 @@ var __extends = (this && this.__extends) || function (d, b) {
     exports.Provisioning = Provisioning;
 });
 
-},{"../../net/HttpClient":3,"../../utils/logging":20,"./ObjectHandlers/ObjectComposedLook":6,"./ObjectHandlers/ObjectCustomActions":7,"./ObjectHandlers/ObjectFeatures":8,"./ObjectHandlers/ObjectFiles":9,"./ObjectHandlers/ObjectLists":11,"./ObjectHandlers/ObjectNavigation":12,"./ObjectHandlers/ObjectPropertyBagEntries":13,"./ObjectHandlers/ObjectWebSettings":14,"./ProvisioningStep":15,"./util":18}],18:[function(require,module,exports){
+},{"../../net/HttpClient":5,"../../utils/logging":20,"./ObjectHandlers/ObjectComposedLook":6,"./ObjectHandlers/ObjectCustomActions":7,"./ObjectHandlers/ObjectFeatures":8,"./ObjectHandlers/ObjectFiles":9,"./ObjectHandlers/ObjectLists":11,"./ObjectHandlers/ObjectNavigation":12,"./ObjectHandlers/ObjectPropertyBagEntries":13,"./ObjectHandlers/ObjectWebSettings":14,"./ProvisioningStep":16,"./util":18}],16:[function(require,module,exports){
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    var ProvisioningStep = (function () {
+        function ProvisioningStep(name, index, objects, parameters, handler) {
+            this.name = name;
+            this.index = index;
+            this.objects = objects;
+            this.parameters = parameters;
+            this.handler = handler;
+        }
+        ProvisioningStep.prototype.execute = function (dependentPromise) {
+            var _this = this;
+            var _handler = new this.handler();
+            if (!dependentPromise) {
+                return _handler.ProvisionObjects(this.objects, this.parameters);
+            }
+            return new Promise(function (resolve, reject) {
+                dependentPromise.then(function () {
+                    return _handler.ProvisionObjects(_this.objects, _this.parameters).then(resolve, resolve);
+                });
+            });
+        };
+        return ProvisioningStep;
+    }());
+    exports.ProvisioningStep = ProvisioningStep;
+});
+
+},{}],17:[function(require,module,exports){
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    var Sequencer = (function () {
+        function Sequencer(functions, parameter, scope) {
+            this.functions = functions;
+            this.parameter = parameter;
+            this.scope = scope;
+        }
+        Sequencer.prototype.execute = function (progressFunction) {
+            var promiseSequence = Promise.resolve();
+            this.functions.forEach(function (sequenceFunction, functionNr) {
+                promiseSequence = promiseSequence.then(function () {
+                    return sequenceFunction.call(this.scope, this.parameter);
+                }).then(function (result) {
+                    if (progressFunction) {
+                        progressFunction.call(this, functionNr, this.functions);
+                    }
+                });
+            }, this);
+            return promiseSequence;
+        };
+        return Sequencer;
+    }());
+    exports.Sequencer = Sequencer;
+});
+
+},{}],18:[function(require,module,exports){
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
@@ -2241,5 +2241,5 @@ var __extends = (this && this.__extends) || function (d, b) {
     exports.Util = Util;
 });
 
-},{}]},{},[17])(17)
+},{}]},{},[15])(15)
 });

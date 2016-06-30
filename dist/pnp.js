@@ -1,5 +1,5 @@
 /**
- * sp-pnp-js v1.0.0 - A reusable JavaScript library targeting SharePoint client-side development.
+ * sp-pnp-js v1.0.1 - A reusable JavaScript library targeting SharePoint client-side development.
  * Copyright (c) 2016 Microsoft
  * MIT
  */
@@ -306,6 +306,95 @@
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports", "../collections/collections", "../utils/util", "../sharepoint/rest/odata"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    var collections_1 = require("../collections/collections");
+    var util_1 = require("../utils/util");
+    var odata_1 = require("../sharepoint/rest/odata");
+    var CachedDigest = (function () {
+        function CachedDigest() {
+        }
+        return CachedDigest;
+    }());
+    exports.CachedDigest = CachedDigest;
+    var DigestCache = (function () {
+        function DigestCache(_httpClient, _digests) {
+            if (_digests === void 0) { _digests = new collections_1.Dictionary(); }
+            this._httpClient = _httpClient;
+            this._digests = _digests;
+        }
+        DigestCache.prototype.getDigest = function (webUrl) {
+            var self = this;
+            var cachedDigest = this._digests.get(webUrl);
+            if (cachedDigest !== null) {
+                var now = new Date();
+                if (now < cachedDigest.expiration) {
+                    return Promise.resolve(cachedDigest.value);
+                }
+            }
+            var url = util_1.Util.combinePaths(webUrl, "/_api/contextinfo");
+            return self._httpClient.fetchRaw(url, {
+                cache: "no-cache",
+                credentials: "same-origin",
+                headers: {
+                    "Accept": "application/json;odata=verbose",
+                    "Content-type": "application/json;odata=verbose;charset=utf-8",
+                },
+                method: "POST",
+            }).then(function (response) {
+                var parser = new odata_1.ODataDefaultParser();
+                return parser.parse(response).then(function (d) { return d.GetContextWebInformation; });
+            }).then(function (data) {
+                var newCachedDigest = new CachedDigest();
+                newCachedDigest.value = data.FormDigestValue;
+                var seconds = data.FormDigestTimeoutSeconds;
+                var expiration = new Date();
+                expiration.setTime(expiration.getTime() + 1000 * seconds);
+                newCachedDigest.expiration = expiration;
+                self._digests.add(webUrl, newCachedDigest);
+                return newCachedDigest.value;
+            });
+        };
+        DigestCache.prototype.clear = function () {
+            this._digests.clear();
+        };
+        return DigestCache;
+    }());
+    exports.DigestCache = DigestCache;
+});
+
+},{"../collections/collections":1,"../sharepoint/rest/odata":18,"../utils/util":37}],8:[function(require,module,exports){
+(function (global){
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    var FetchClient = (function () {
+        function FetchClient() {
+        }
+        FetchClient.prototype.fetch = function (url, options) {
+            return global.fetch(url, options);
+        };
+        return FetchClient;
+    }());
+    exports.FetchClient = FetchClient;
+});
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{}],9:[function(require,module,exports){
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === 'function' && define.amd) {
         define(["require", "exports", "./fetchClient", "./digestCache", "../utils/util", "../configuration/pnplibconfig"], factory);
     }
 })(function (require, exports) {
@@ -404,96 +493,7 @@
     exports.HttpClient = HttpClient;
 });
 
-},{"../configuration/pnplibconfig":3,"../utils/util":37,"./digestCache":8,"./fetchClient":9}],8:[function(require,module,exports){
-(function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports", "../collections/collections", "../utils/util", "../sharepoint/rest/odata"], factory);
-    }
-})(function (require, exports) {
-    "use strict";
-    var collections_1 = require("../collections/collections");
-    var util_1 = require("../utils/util");
-    var odata_1 = require("../sharepoint/rest/odata");
-    var CachedDigest = (function () {
-        function CachedDigest() {
-        }
-        return CachedDigest;
-    }());
-    exports.CachedDigest = CachedDigest;
-    var DigestCache = (function () {
-        function DigestCache(_httpClient, _digests) {
-            if (_digests === void 0) { _digests = new collections_1.Dictionary(); }
-            this._httpClient = _httpClient;
-            this._digests = _digests;
-        }
-        DigestCache.prototype.getDigest = function (webUrl) {
-            var self = this;
-            var cachedDigest = this._digests.get(webUrl);
-            if (cachedDigest !== null) {
-                var now = new Date();
-                if (now < cachedDigest.expiration) {
-                    return Promise.resolve(cachedDigest.value);
-                }
-            }
-            var url = util_1.Util.combinePaths(webUrl, "/_api/contextinfo");
-            return self._httpClient.fetchRaw(url, {
-                cache: "no-cache",
-                credentials: "same-origin",
-                headers: {
-                    "Accept": "application/json;odata=verbose",
-                    "Content-type": "application/json;odata=verbose;charset=utf-8",
-                },
-                method: "POST",
-            }).then(function (response) {
-                var parser = new odata_1.ODataDefaultParser();
-                return parser.parse(response).then(function (d) { return d.GetContextWebInformation; });
-            }).then(function (data) {
-                var newCachedDigest = new CachedDigest();
-                newCachedDigest.value = data.FormDigestValue;
-                var seconds = data.FormDigestTimeoutSeconds;
-                var expiration = new Date();
-                expiration.setTime(expiration.getTime() + 1000 * seconds);
-                newCachedDigest.expiration = expiration;
-                self._digests.add(webUrl, newCachedDigest);
-                return newCachedDigest.value;
-            });
-        };
-        DigestCache.prototype.clear = function () {
-            this._digests.clear();
-        };
-        return DigestCache;
-    }());
-    exports.DigestCache = DigestCache;
-});
-
-},{"../collections/collections":1,"../sharepoint/rest/odata":18,"../utils/util":37}],9:[function(require,module,exports){
-(function (global){
-(function (factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports); if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports"], factory);
-    }
-})(function (require, exports) {
-    "use strict";
-    var FetchClient = (function () {
-        function FetchClient() {
-        }
-        FetchClient.prototype.fetch = function (url, options) {
-            return global.fetch(url, options);
-        };
-        return FetchClient;
-    }());
-    exports.FetchClient = FetchClient;
-});
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{}],10:[function(require,module,exports){
+},{"../configuration/pnplibconfig":3,"../utils/util":37,"./digestCache":7,"./fetchClient":8}],10:[function(require,module,exports){
 (function (factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports); if (v !== undefined) module.exports = v;
@@ -2523,7 +2523,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     exports.QueryableInstance = QueryableInstance;
 });
 
-},{"../../collections/collections":1,"../../net/HttpClient":7,"../../utils/util":37,"./odata":18}],20:[function(require,module,exports){
+},{"../../collections/collections":1,"../../net/HttpClient":9,"../../utils/util":37,"./odata":18}],20:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2723,11 +2723,11 @@ var __extends = (this && this.__extends) || function (d, b) {
             _super.call(this, baseUrl, path);
         }
         RoleAssignments.prototype.add = function (principalId, roleDefId) {
-            var a = new RoleAssignments(this, "addroleassignment(principalid=" + principalId + ", roledefid=" + roleDefId);
+            var a = new RoleAssignments(this, "addroleassignment(principalid=" + principalId + ", roledefid=" + roleDefId + ")");
             return a.post();
         };
         RoleAssignments.prototype.remove = function (principalId, roleDefId) {
-            var a = new RoleAssignments(this, "removeroleassignment(principalid=" + principalId + ", roledefid=" + roleDefId);
+            var a = new RoleAssignments(this, "removeroleassignment(principalid=" + principalId + ", roledefid=" + roleDefId + ")");
             return a.post();
         };
         RoleAssignments.prototype.getById = function (id) {

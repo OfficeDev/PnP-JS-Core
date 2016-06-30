@@ -29,7 +29,7 @@ export class RoleAssignments extends QueryableCollection {
      * 
      */
     public add(principalId: number, roleDefId: number): Promise<void> {
-        let a = new RoleAssignments(this, `addroleassignment(principalid=${principalId}, roledefid=${roleDefId}`);
+        let a = new RoleAssignments(this, `addroleassignment(principalid=${principalId}, roledefid=${roleDefId})`);
         return a.post();
     }
 
@@ -41,7 +41,7 @@ export class RoleAssignments extends QueryableCollection {
      * 
      */
     public remove(principalId: number, roleDefId: number): Promise<void> {
-        let a = new RoleAssignments(this, `removeroleassignment(principalid=${principalId}, roledefid=${roleDefId}`);
+        let a = new RoleAssignments(this, `removeroleassignment(principalid=${principalId}, roledefid=${roleDefId})`);
         return a.post();
     }
 

@@ -32,11 +32,11 @@ require(["pnp"], function (pnp) {
         }
     });
 
-    pnp.sp.web.lists.getByTitle("Config3").items.add({ Title: "Another Item" }).then(function (result) {
+    pnp.sp.web.lists.getByTitle("Config").items.add({ Title: "Another Item" }).then(function (result) {
         show(result.data);
     });
 
-    // pnp.sp.web.lists.getByTitle("Config3").items.get().then(show);
+    //pnp.sp.web.lists.getByTitle("Config3").items.get().then(show);
 
     // pnp.sp.web.lists.getByTitle("Config3").items.orderBy("Title").top(1).getPaged().then(d => {
     //     show(d);
