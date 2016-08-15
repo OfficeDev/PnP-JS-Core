@@ -6,6 +6,7 @@
 
 The Patterns and Practices JavaScript Core Library was created to help developers by simplifying common operations within SharePoint. This is aligned with helping folks transitioning into client side development in support of the upcoming SharePoint Framework. Currently it contains a fluent API for working with the full SharePoint REST API as well as utility and helper functions. This takes the guess work out of creating REST requests, letting developers focus on the what and less on the how.
 
+![pnp in action](http://i.imgur.com/TGT3Xs2.gif)
 
 Please use [http://aka.ms/OfficeDevPnP](http://aka.ms/OfficeDevPnP) for getting latest information around the whole *Office 365 Developer Patterns and Practices program*.
 
