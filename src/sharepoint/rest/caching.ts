@@ -13,7 +13,7 @@ export interface ICachingOptions {
 
 export class CachingOptions implements ICachingOptions {
 
-    constructor(public key: string) {}
+    constructor(public key: string) { }
 
     protected static storage = new PnPClientStorage();
 
@@ -41,7 +41,9 @@ export class CachingParserWrapper<T, U> implements ODataParser<T, U> {
         // add this to the cache based on the options
         return this._parser.parse(response).then(data => {
 
-            this._cacheOptions.store.put(this._cacheOptions.key, data, this._cacheOptions.expiration);
+            if (this._cacheOptions.store !== null) {
+                this._cacheOptions.store.put(this._cacheOptions.key, data, this._cacheOptions.expiration);
+            }
 
             return data;
         });

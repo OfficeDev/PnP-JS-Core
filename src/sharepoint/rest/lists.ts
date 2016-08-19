@@ -311,6 +311,22 @@ export class List extends QueryableSecurable {
 
     /**
      * Returns a collection of items from the list based on the specified query.
+     * 
+     * @param CamlQuery The Query schema of Collaborative Application Markup 
+     * Language (CAML) is used in various ways within the context of Microsoft SharePoint Foundation 
+     * to define queries against list data.
+     * see:
+     * 
+     * https://msdn.microsoft.com/en-us/library/office/ms467521.aspx
+     *      
+     * @param expands A URI with a $expand System Query Option indicates that Entries associated with
+     * the Entry or Collection of Entries identified by the Resource Path 
+     * section of the URI must be represented inline (i.e. eagerly loaded). 
+     * see:
+     * 
+     * https://msdn.microsoft.com/en-us/library/office/fp142385.aspx
+     * 
+     * http://www.odata.org/documentation/odata-version-2-0/uri-conventions/#ExpandSystemQueryOption
      */
     public getItemsByCAMLQuery(query: CamlQuery, ...expands: string[]): Promise<any> {
 

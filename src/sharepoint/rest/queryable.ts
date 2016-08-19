@@ -256,10 +256,13 @@ export class Queryable {
                 options = Util.extend(options, this._cachingOptions);
             }
 
-            // check if we have the data in cache and if so return a resolved promise
-            let data = options.store.get(options.key);
-            if (data !== null) {
-                return new Promise(resolve => resolve(data));
+            // we may not have a valid store, i.e. on node
+            if (options.store !== null) {
+                // check if we have the data in cache and if so return a resolved promise
+                let data = options.store.get(options.key);
+                if (data !== null) {
+                    return new Promise(resolve => resolve(data));
+                }
             }
 
             // if we don't then wrap the supplied parser in the caching parser wrapper

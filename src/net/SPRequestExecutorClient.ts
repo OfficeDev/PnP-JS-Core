@@ -33,20 +33,25 @@ export class SPRequestExecutorClient implements HttpClientImpl {
         }
 
         return new Promise((resolve, reject) => {
-            executor.executeAsync(
-                {
-                    body: options.body,
-                    error: (error: SP.ResponseInfo) => {
-                        reject(this.convertToResponse(error));
-                    },
-                    headers: headers,
-                    method: options.method,
-                    success: (response: SP.ResponseInfo) => {
-                        resolve(this.convertToResponse(response));
-                    },
-                    url: url,
-                }
-            );
+
+            let requestOptions = {
+                error: (error: SP.ResponseInfo) => {
+                    reject(this.convertToResponse(error));
+                },
+                headers: headers,
+                method: options.method,
+                success: (response: SP.ResponseInfo) => {
+                    resolve(this.convertToResponse(response));
+                },
+                url: url,
+            };
+
+            if (options.body) {
+                requestOptions["body"] = options.body;
+            } else {
+                requestOptions["binaryStringRequestBody"] = true;
+            }
+            executor.executeAsync(requestOptions);
         });
     }
 

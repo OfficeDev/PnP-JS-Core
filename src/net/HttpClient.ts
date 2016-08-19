@@ -50,7 +50,7 @@ export class HttpClient {
         }
 
         if (!headers.has("X-ClientService-ClientTag")) {
-            headers.append("X-ClientService-ClientTag", "SharePoint.PnP.JavaScriptCore");
+            headers.append("X-ClientService-ClientTag", "PnPCoreJS");
         }
 
         opts = Util.extend(opts, { headers: headers });

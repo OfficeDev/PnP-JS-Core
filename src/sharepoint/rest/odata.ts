@@ -5,6 +5,7 @@ import { Util } from "../../utils/util";
 import { Logger } from "../../utils/logging";
 import { HttpClient } from "../../net/httpclient";
 import { RuntimeConfig } from "../../configuration/pnplibconfig";
+import { TypedHash } from "../../collections/collections";
 
 export function extractOdataId(candidate: any): string {
 
@@ -272,8 +273,9 @@ export class ODataBatch {
 
         batchBody.push(`--batch_${this._batchId}--\n`);
 
-        let batchHeaders = new Headers();
-        batchHeaders.append("Content-Type", `multipart/mixed; boundary=batch_${this._batchId}`);
+        let batchHeaders: TypedHash<string> = {
+            "Content-Type": `multipart/mixed; boundary=batch_${this._batchId}`,
+        };
 
         let batchOptions = {
             "body": batchBody.join(""),

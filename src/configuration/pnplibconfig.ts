@@ -2,6 +2,8 @@
 
 import { TypedHash } from "../collections/collections";
 
+declare var global: any;
+
 export interface NodeClientData {
     clientId: string;
     clientSecret: string;
@@ -86,6 +88,11 @@ export class RuntimeConfigImpl {
             this._useNodeClient = true;
             this._useSPRequestExecutor = false; // just don't allow this conflict
             this._nodeClientData = config.nodeClientOptions;
+            // this is to help things work when running in node.js, specifically batching
+            // we shim the _spPageContextInfo object
+            global._spPageContextInfo = {
+                webAbsoluteUrl: config.nodeClientOptions.siteUrl,
+            };
         }
     }
 
