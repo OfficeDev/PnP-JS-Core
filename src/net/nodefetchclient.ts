@@ -64,7 +64,7 @@ export class NodeFetchClient implements HttpClientImpl {
                 let body = [];
                 body.push("grant_type=client_credentials");
                 body.push(`client_id=${formattedClientId}`);
-                body.push(`client_secret=${this._clientSecret}`);
+                body.push(`client_secret=${encodeURIComponent(this._clientSecret)}`);
                 body.push(`resource=${resource}`);
 
                 return nodeFetch(authUrl, {
