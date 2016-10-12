@@ -7,7 +7,7 @@ import { Web } from "../src/sharepoint/rest/webs";
 import * as chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 
-export let testSettings = Util.extend(global.settings.testing, { webUrl: ""  });
+export let testSettings = Util.extend(global.settings.testing, { webUrl: "" });
 
 before(function (done: MochaDone) {
 
@@ -18,9 +18,11 @@ before(function (done: MochaDone) {
     if (testSettings.enableWebTests) {
 
         pnp.setup({
+            headers: {
+                "Accept": "application/json;odata=verbose",
+            },
             nodeClientOptions: {
-                clientId: testSettings.clientId,
-                clientSecret: testSettings.clientSecret,
+                credentials: testSettings.credentials,
                 siteUrl: testSettings.siteUrl,
             },
         });
@@ -41,18 +43,18 @@ before(function (done: MochaDone) {
 
             // re-setup the node client to use the new web
             pnp.setup({
-                // headers: {
-                //     "Accept": "application/json;odata=verbose",
-                // },
+                    headers: {
+                    "Accept": "application/json;odata=verbose",
+                },
                 nodeClientOptions: {
-                    clientId: testSettings.clientId,
-                    clientSecret: testSettings.clientSecret,
-                    siteUrl: url,
+                    credentials: testSettings.credentials,
+                    siteUrl: testSettings.siteUrl,
                 },
             });
 
             done();
-        });
+        })
+            .catch(done);
     } else {
         done();
     }
@@ -72,9 +74,9 @@ export function cleanUpAllSubsites() {
             let web = new Web(element["odata.id"], "");
             web.webs.select("Title").get().then((sw: any[]) => {
                 return Promise.all(sw.map((value, index, arr) => {
-                        let web2 = new Web(value["odata.id"], "");
-                        return web2.delete();
-                    }));
+                    let web2 = new Web(value["odata.id"], "");
+                    return web2.delete();
+                }));
             }).then(() => { web.delete(); });
         });
     }).catch(e => console.log("Error: " + JSON.stringify(e)));

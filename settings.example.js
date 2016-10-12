@@ -6,10 +6,13 @@ var settings = {
         siteUrl: "https://mydevtenant.sharepoint.com/"
     },
     testing: {
-        clientId: "{ client id }",
-        clientSecret: "{ client secret }",
         enableWebTests: true,
         siteUrl: "{ site collection url }",
+        /* any credentialOptions given by https://github.com/s-KaiNet/node-sp-auth#params */
+        credentials: {
+            clientId: '{ client id }',
+		    clientSecret: '{client secret}'
+        }
     }
 }
 

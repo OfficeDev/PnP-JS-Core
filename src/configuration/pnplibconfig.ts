@@ -1,13 +1,13 @@
 "use strict";
 
 import { TypedHash } from "../collections/collections";
+import {IAuthOptions} from "node-sp-auth";
 
 declare var global: any;
 
 export interface NodeClientData {
-    clientId: string;
-    clientSecret: string;
     siteUrl: string;
+    credentials: IAuthOptions;
 }
 
 export interface LibraryConfiguration {

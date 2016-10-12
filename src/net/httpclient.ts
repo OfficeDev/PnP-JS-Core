@@ -46,7 +46,7 @@ export class HttpClient {
         }
 
         if (!headers.has("Content-Type")) {
-            headers.append("Content-Type", "application/json;odata=verbose;charset=utf-8");
+            headers.append("Content-Type", "application/json;odata=verbose");
         }
 
         if (!headers.has("X-ClientService-ClientTag")) {
@@ -136,7 +136,7 @@ export class HttpClient {
             return new SPRequestExecutorClient();
         } else if (RuntimeConfig.useNodeFetchClient) {
             let opts = RuntimeConfig.nodeRequestOptions;
-            return new NodeFetchClient(opts.siteUrl, opts.clientId, opts.clientSecret);
+            return new NodeFetchClient(opts.siteUrl, opts.credentials);
         } else {
             return new FetchClient();
         }
