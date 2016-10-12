@@ -21,7 +21,7 @@ var gulp = require("gulp"),
 //******************************************************************************
 
 gulp.task("lint", function () {
-    return gulp.src(global.TSWorkspace.Files)
+    return gulp.src(global.TSWorkspace.TSLint)
         .pipe(tslint({
             formatter: "prose"
         }))

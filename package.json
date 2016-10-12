@@ -9,7 +9,8 @@
     "@types/microsoft-ajax": "0.0.31",
     "@types/sharepoint": "^2013.0.31",
     "@types/whatwg-fetch": "0.0.32",
-    "es6-promise": "^3.0.0"
+    "es6-promise": "^3.0.0",
+    "node-sp-auth": "^1.1.2"
   },
   "devDependencies": {
     "@types/chai": "^3.4.34",

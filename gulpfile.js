@@ -27,9 +27,14 @@ global.TSWorkspace = {
     "PnPFile": "src/pnp.ts",
     "Files": [
         'src/**/*.ts',
+        'typings/modules/node-sp-auth/index.d.ts'     
+    ],
+    "TSLint": [
+        'src/**/*.ts'
     ],
     "Tests": [
         'tests/**/*.ts',
+        'typings/modules/node-sp-auth/index.d.ts'
     ]
 };
 
