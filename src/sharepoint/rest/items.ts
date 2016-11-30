@@ -104,8 +104,8 @@ export class Item extends QueryableSecurable {
      * Gets the set of attachments for this item
      *
      */
-    public get attachmentFiles(): QueryableCollection {
-        return new AttachmentFiles(this, "AttachmentFiles");
+    public get attachmentFiles(): AttachmentFiles {
+        return new AttachmentFiles(this);
     }
 
     /**

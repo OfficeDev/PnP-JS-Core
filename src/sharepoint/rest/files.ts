@@ -2,7 +2,7 @@
 
 import { Queryable, QueryableCollection, QueryableInstance } from "./queryable";
 import { Item } from "./items";
-import { ODataParser } from "./odata";
+import { TextFileParser, BlobFileParser, JSONFileParser, BufferFileParser } from "./odata";
 import { Util } from "../../utils/util";
 
 export interface ChunkedFileUploadProgressData {
@@ -425,39 +425,6 @@ export class File extends QueryableInstance {
                     file: new File(response.ServerRelativeUrl),
                 };
             });
-    }
-}
-
-export class TextFileParser implements ODataParser<any, string> {
-
-    public parse(r: Response): Promise<string> {
-        return r.text();
-    }
-}
-
-export class BlobFileParser implements ODataParser<any, Blob> {
-
-    public parse(r: Response): Promise<Blob> {
-        return r.blob();
-    }
-}
-
-export class JSONFileParser implements ODataParser<any, any> {
-
-    public parse(r: Response): Promise<any> {
-        return r.json();
-    }
-}
-
-export class BufferFileParser implements ODataParser<any, ArrayBuffer> {
-
-    public parse(r: any): Promise<ArrayBuffer> {
-
-        if (Util.isFunction(r.arrayBuffer)) {
-            return r.arrayBuffer();
-        }
-
-        return r.buffer();
     }
 }
 

@@ -1,11 +1,7 @@
 "use strict";
 
-import { Queryable, QueryableCollection, QueryableInstance } from "./queryable";
-import { QueryableSecurable } from "./queryablesecurable";
-import { TypedHash } from "../../collections/collections";
-import { Util } from "../../utils/util";
-import * as Types from "./types";
-import { ODataParserBase } from "./odata";
+import { Queryable, QueryableInstance, QueryableCollection } from "./queryable";
+import { TextFileParser, BlobFileParser, JSONFileParser, BufferFileParser } from "./odata";
 
 /**
  * Describes a collection of Item objects
@@ -29,7 +25,7 @@ export class AttachmentFiles extends QueryableCollection {
      */
     public getByName(name: string): AttachmentFile {
         let f = new AttachmentFile(this);
-        f.concat(`(FileName='${name}')`);
+        f.concat(`('${name}')`);
         return f;
     }
 
@@ -42,8 +38,7 @@ export class AttachmentFiles extends QueryableCollection {
     public add(name: string, content: string): Promise<AttachmentFileAddResult> {
         return new AttachmentFiles(this, `add(FileName='${name}')`)
             .post({
-                // binaryStringRequestBody: true,
-                body: content
+                body: content,
             }).then((response) => {
                 return {
                     data: response,
@@ -57,7 +52,7 @@ export class AttachmentFiles extends QueryableCollection {
  * Descrines a single attachment file instance
  *
  */
-export class AttachmentFile extends QueryableSecurable {
+export class AttachmentFile extends QueryableInstance {
 
     /**
      * Creates a new instance of the AttachmentFile class
@@ -66,6 +61,40 @@ export class AttachmentFile extends QueryableSecurable {
      */
     constructor(baseUrl: string | Queryable, path?: string) {
         super(baseUrl, path);
+    }
+
+    /**
+     * Gets the contents of the file as text
+     * 
+     */
+    public getText(): Promise<string> {
+
+        return new AttachmentFile(this, "$value").get(new TextFileParser());
+    }
+
+    /**
+     * Gets the contents of the file as a blob, does not work in Node.js
+     * 
+     */
+    public getBlob(): Promise<Blob> {
+        
+        return new AttachmentFile(this, "$value").get(new BlobFileParser());
+    }
+
+    /**
+     * Gets the contents of a file as an ArrayBuffer, works in Node.js
+     */
+    public getBuffer(): Promise<ArrayBuffer> {
+
+        return new AttachmentFile(this, "$value").get(new BufferFileParser());
+    }
+
+    /**
+     * Gets the contents of a file as an ArrayBuffer, works in Node.js
+     */
+    public getJSON(): Promise<any> {
+
+        return new AttachmentFile(this, "$value").get(new JSONFileParser());
     }
 
     /**

@@ -389,3 +389,36 @@ interface ODataBatchRequestInfo {
     resolve: (d: any) => void;
     reject: (error: any) => void;
 }
+
+export class TextFileParser implements ODataParser<any, string> {
+
+    public parse(r: Response): Promise<string> {
+        return r.text();
+    }
+}
+
+export class BlobFileParser implements ODataParser<any, Blob> {
+
+    public parse(r: Response): Promise<Blob> {
+        return r.blob();
+    }
+}
+
+export class JSONFileParser implements ODataParser<any, any> {
+
+    public parse(r: Response): Promise<any> {
+        return r.json();
+    }
+}
+
+export class BufferFileParser implements ODataParser<any, ArrayBuffer> {
+
+    public parse(r: any): Promise<ArrayBuffer> {
+
+        if (Util.isFunction(r.arrayBuffer)) {
+            return r.arrayBuffer();
+        }
+
+        return r.buffer();
+    }
+}
