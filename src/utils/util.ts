@@ -155,6 +155,17 @@ export class Util {
         });
         return guid;
     }
+
+
+    /**
+     * Checks if a string is a valid GUID using regex.exec
+    */
+    public static isValidGUID(value: string): boolean {
+        let regex = /[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i;
+        let match = regex.exec(value);
+        return match != null;
+    }
+
     /* tslint:enable */
 
     /**
