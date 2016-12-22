@@ -68,7 +68,6 @@ export class AttachmentFile extends QueryableInstance {
      * 
      */
     public getText(): Promise<string> {
-
         return new AttachmentFile(this, "$value").get(new TextFileParser());
     }
 
@@ -77,7 +76,6 @@ export class AttachmentFile extends QueryableInstance {
      * 
      */
     public getBlob(): Promise<Blob> {
-        
         return new AttachmentFile(this, "$value").get(new BlobFileParser());
     }
 
@@ -85,7 +83,6 @@ export class AttachmentFile extends QueryableInstance {
      * Gets the contents of a file as an ArrayBuffer, works in Node.js
      */
     public getBuffer(): Promise<ArrayBuffer> {
-
         return new AttachmentFile(this, "$value").get(new BufferFileParser());
     }
 
@@ -93,7 +90,6 @@ export class AttachmentFile extends QueryableInstance {
      * Gets the contents of a file as an ArrayBuffer, works in Node.js
      */
     public getJSON(): Promise<any> {
-
         return new AttachmentFile(this, "$value").get(new JSONFileParser());
     }
 

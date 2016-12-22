@@ -235,7 +235,7 @@ export class Search extends QueryableInstance {
 
     /**
      * Creates a new instance of the Search class
-     * 
+     *
      * @param baseUrl The url for the search context
      * @param query The SearchQuery object to execute
      */
@@ -244,10 +244,19 @@ export class Search extends QueryableInstance {
     }
 
     /**
-     * .......
+     *
      * @returns Promise
      */
-    public execute(query: SearchQuery): Promise<SearchResults> {
+    public execute(query?: SearchQuery): Promise<SearchResults> {
+
+        // Used with alternative search
+        if (typeof query === "undefined" && typeof this.searchQuery !== "undefined") {
+            if (typeof this.pageNumValue !== "undefined") {
+                this.searchQuery.RowLimit = this.searchQuery.RowLimit || 10;
+                this.searchQuery.StartRow = this.searchQuery.RowLimit * (this.pageNumValue - 1) + 1;
+            }
+            query = this.searchQuery;
+        }
 
         let formattedBody: any;
         formattedBody = query;
@@ -284,10 +293,70 @@ export class Search extends QueryableInstance {
 
         return this.post({ body: postBody }).then((data) => new SearchResults(data));
     }
+
+    /**
+     * Skips the specified number of search results items
+     * 
+     * @param startRow The an amount or rows to skip during search request
+     */
+    public startRow(startRow: number): this {
+        this.searchQuery.StartRow = startRow;
+        return this;
+    }
+
+    /**
+     * Sets search results limit
+     * 
+     * @param rowLimit Limit or rows in a result returned from search
+     */
+    public rowLimit(rowLimit: number): this {
+        this.searchQuery.RowLimit = rowLimit;
+        return this;
+    }
+
+    /**
+     * Sets search results limit
+     * 
+     * @param pageNum Limit or rows in a result returned from search
+     */
+    public pageNum(pageNum: number): this {
+        this.pageNumValue = pageNum;
+        return this;
+    }
+
+    /**
+     * Stores search query options
+     * Used with alternative search
+     */
+    private searchQuery: SearchQuery;
+
+    /**
+     * Stores paged request page number
+     * Used with alternative search
+     */
+    private pageNumValue: number;
+
+    /**
+     * Sets search query options
+     *
+     * @param query The SearchQuery definition
+     */
+    public setQuery(query: string | SearchQuery): this {
+        let finalQuery: SearchQuery;
+
+        if (typeof query === "string") {
+            finalQuery = { Querytext: query };
+        } else {
+            finalQuery = query;
+        }
+
+        this.searchQuery = finalQuery;
+        return this;
+    };
 }
 
 /**
- * Describes the SearchResults class, which returns the formatted and raw version of the query response 
+ * Describes the SearchResults class, which returns the formatted and raw version of the query response
  */
 export class SearchResults {
 
@@ -331,7 +400,7 @@ export class SearchResults {
 }
 
 /**
- * Describes the SearchResult class 
+ * Describes the SearchResult class
  */
 export class SearchResult {
 
@@ -348,7 +417,7 @@ export class SearchResult {
 }
 
 /**
- * Defines how search results are sorted.
+ * Defines how search results are sorted
  */
 export interface Sort {
 

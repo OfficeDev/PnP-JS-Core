@@ -51,6 +51,18 @@ export class Rest {
     }
 
     /**
+     * Begins search query fluent method
+     *
+     * @param query The SearchQuery definition
+     */
+    public searchAdv(query: string | SearchQuery): Search {
+        let search = new Search("");
+        search.setQuery(query);
+
+        return search;
+    }
+
+    /**
      * Begins a site collection scoped REST request
      *
      */
