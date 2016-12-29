@@ -139,10 +139,12 @@ export class HttpClient {
     }
 
     protected getFetchImpl(): HttpClientImpl {
+        let opts = RuntimeConfig.nodeRequestOptions;
         if (RuntimeConfig.useSPRequestExecutor) {
             return new SPRequestExecutorClient();
-        } else if (RuntimeConfig.useNodeFetchClient) {
-            let opts = RuntimeConfig.nodeRequestOptions;
+        } else if (RuntimeConfig.useNodeFetchClient && opts && opts.httpClient) {
+            return RuntimeConfig.nodeRequestOptions.httpClient;
+        } else if (RuntimeConfig.useNodeFetchClient && opts && opts.clientId && opts.clientSecret) {
             return new NodeFetchClient(opts.siteUrl, opts.clientId, opts.clientSecret);
         } else {
             return new FetchClient();
