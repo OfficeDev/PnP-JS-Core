@@ -1,11 +1,13 @@
 import { TypedHash } from "../collections/collections";
+import { HttpClientImpl } from "../net/httpclient";
 
 declare var global: any;
 
 export interface NodeClientData {
-    clientId: string;
-    clientSecret: string;
+    clientId?: string;
+    clientSecret?: string;
     siteUrl: string;
+    httpClient?: HttpClientImpl;
 }
 
 export interface LibraryConfiguration {
