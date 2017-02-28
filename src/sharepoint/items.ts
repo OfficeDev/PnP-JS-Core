@@ -239,7 +239,7 @@ export class Item extends QueryableSecurable {
      * Moves the list item to the Recycle Bin and returns the identifier of the new Recycle Bin item.
      */
     public recycle(): Promise<string> {
-        let i = new Item(this, "recycle");
+        let i = new Item(this, "recycle()");
         return i.post();
     }
 
