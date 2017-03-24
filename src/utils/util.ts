@@ -275,9 +275,13 @@ export class Util {
                 }
             }
 
-            // does window.location exist and have _layouts in it?
+            // does window.location exist and have _layouts or site assets in it?
             if (typeof global.location !== "undefined") {
-                const index = global.location.toString().toLowerCase().indexOf("/_layouts/");
+                if (global.location.toString().toLowerCase().indexOf("/_layouts/") > 0){
+	                const index = global.location.toString().toLowerCase().indexOf("/_layouts/");
+	            }else if(global.location.toString().toLowerCase().indexOf("/siteassets/") > 0){
+	                const index = global.location.toString().toLowerCase().indexOf("/siteassets/");
+                }
                 if (index > 0) {
                     // we are likely in the workbench in /_layouts/
                     return resolve(Util.combinePaths(global.location.toString().substr(0, index), candidateUrl));
