@@ -15,7 +15,7 @@ import { setRuntimeConfig, LibraryConfiguration } from "./configuration/pnplibco
 export const util = Util;
 
 /**
- * Provides access to the REST interface
+ * Provides access to the SharePoint REST interface
  */
 export const sp = new SPRest();
 
