@@ -66,6 +66,12 @@ describe("Web", () => {
         });
     });
 
+    describe("regionalSettings", () => {
+        it("should return _api/web/regionalsettings", () => {
+            expect(web.regionalSettings.toUrl()).to.match(toMatchEndRegex("_api/web/regionalsettings"));
+        });
+    });
+
     describe("siteUserInfoList", () => {
         it("should return _api/web/siteUserInfoList", () => {
             expect(web.siteUserInfoList.toUrl()).to.match(toMatchEndRegex("_api/web/siteuserinfolist"));

@@ -4,6 +4,7 @@ import { Fields } from "./fields";
 import { Navigation } from "./navigation";
 import { SiteGroups, SiteGroup } from "./sitegroups";
 import { ContentTypes } from "./contenttypes";
+import { RegionalSettings } from "./regionalsettings";
 import { Folders, Folder } from "./folders";
 import { RoleDefinitions } from "./roles";
 import { File } from "./files";
@@ -218,6 +219,13 @@ export class Web extends SharePointQueryableShareableWeb {
         return new List(this, "siteuserinfolist");
     }
 
+    /**
+     * Gets regional settings
+     *
+     */
+    public get regionalSettings(): RegionalSettings {
+        return new RegionalSettings(this);
+    }
 
     /**
      * Gets the current user
