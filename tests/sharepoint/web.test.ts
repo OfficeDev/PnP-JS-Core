@@ -130,6 +130,13 @@ describe("Web", () => {
         });
     });
 
+    describe("effectiveBasePermissions", () => {
+        it("should return _api/web/effectivebasepermissions", () => {
+            expect(web.effectiveBasePermissions.toUrl())
+                .to.match(toMatchEndRegex("_api/web/effectivebasepermissions"));
+        });
+    });
+
     if (testSettings.enableWebTests) {
 
         describe("webs", () => {

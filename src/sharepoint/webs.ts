@@ -251,6 +251,14 @@ export class Web extends SharePointQueryableShareableWeb {
     }
 
     /**
+     * Gets the effective base permissions of this web
+     *
+     */
+    public get effectiveBasePermissions(): SharePointQueryable {
+        return new SharePointQueryable(this, "effectivebasepermissions");
+    }
+
+    /**
      * Gets the collection of RoleDefinition resources
      *
      */
