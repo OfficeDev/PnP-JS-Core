@@ -134,6 +134,12 @@ describe("List", () => {
         });
     });
 
+    describe("defaultView/viewFields", () => {
+        it("should return _api/web/lists/getByTitle('Tasks')/DefaultView/viewfields", () => {
+            expect(list.defaultView.fields.toUrl()).to.match(toMatchEndRegex("_api/web/lists/getByTitle('Tasks')/DefaultView/viewfields"));
+        });
+    });
+
     describe("effectiveBasePermissions", () => {
         it("should return _api/web/lists/getByTitle('Tasks')/EffectiveBasePermissions", () => {
             expect(list.effectiveBasePermissions.toUrl())
